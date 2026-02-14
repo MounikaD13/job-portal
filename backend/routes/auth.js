@@ -252,27 +252,110 @@ router.post("/login", async (req, res) => {
     }
 })
 
+//forgot password
+router.post("/forgot-password", async (req, res) => {
+    try {
+        const { email } = req.body
+        if (!email)
+            return res.status(400).json({ message: "email required" });
+        let user = await JobSeeker.findOne({ email }) ||
+            await Recruiter.findOne({ email }) ||
+            await Admin.findOne({ email });
+
+        if (!user)
+            return res.status(401).json({ message: "Invalid email" });
+        const otp = Math.floor(Math.random() * 90000 + 10000).toString()
+        user.resetOtp = otp
+        user.resetOtpExpire = Date.now() + 10 * 60 * 1000
+        await user.save()
+        await transporter.sendMail({
+            from: process.env.EMAIL_USER,
+            to: email,
+            subject: "your OTP for password reset",
+            html: `
+        <h2>your otp <b>${otp}</b></h2>
+        <p>this will expires in 10 minutes</p> `
+        })
+        res.status(200).json({ "message": "sent otp successfully" })
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error" });
+    }
+})
+
+router.post("/verify-reset-otp", async (req, res) => {
+    try {
+        const { email, otp } = req.body
+        // console.log("Received email:", email)
+        // console.log("Received OTP:", otp)
+        // console.log("OTP type:", typeof otp)
+        if (!email || !otp)
+            return res.status(400).json({ message: "All fields required" });
+        let user = await JobSeeker.findOne({ email }) ||
+            await Recruiter.findOne({ email }) ||
+            await Admin.findOne({ email })
+        if (!user)
+            return res.status(404).json({ "message": "User not found" })
+        //   console.log("DB OTP:", user.resetOtp);
+        //     console.log("Entered OTP:", otp);
+        //     console.log("Expire Time:", user.resetOtpExpire);
+        //     console.log("Current Time:", Date.now());
+        if (user.resetOtp !== otp.toString() || user.resetOtpExpire < Date.now()) {
+            return res.status(400).json({ "message": "invalid or expire  otp" })
+        }
+
+        res.status(200).json({ "message": "OTP verified successfully" })
+    }
+    catch (error) {
+        res.status(500).json({ message: "Verification failed.Try again" });
+    }
+})
+
+router.post("/reset-password", async (req, res) => {
+    try {
+        const { email, password } = req.body
+        if (!email || !password)
+            return res.status(400).json({ "message": "all fields required" })
+        let user = await JobSeeker.findOne({ email }) ||
+            await Recruiter.findOne({ email }) ||
+            await Admin.findOne({ email });
+        if (!user)
+            return res.status(404).json({ message: "User not found" });
+        const hashedPassword = await bcrypt.hash(password, 10)
+        user.password = hashedPassword
+        user.resetOtp = undefined
+        user.resetOtpExpire = undefined
+        await user.save()
+        res.status(200).json({ "message": "password rest succesffuly" })
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({ message: "Server error in reset password" });
+    }
+})
+
 router.put("/jobseekerProfile", async (req, res) => {
     try {
-        const user=await JobSeeker.findById(req.user._id)
-        if(!user){
-            return res.status(404).json({"message":"jobseeker not found"})
+        const user = await JobSeeker.findById(req.user._id)
+        if (!user) {
+            return res.status(404).json({ "message": "jobseeker not found" })
         }
-        const {skills,education,experience}=req.body
-       if(skills){
-            user.skills=skills;
+        const { skills, education, experience } = req.body
+        if (skills) {
+            user.skills = skills;
         }
-        if(education){
-            user.education=education
+        if (education) {
+            user.education = education
         }
-        if(experience){
-            user.experience=experience
+        if (experience) {
+            user.experience = experience
         }
-        if(req.file){
+        if (req.file) {
             user.resume = `/uploads/resumes/${req.file.filename}`
         }
         await user.save()
-        res.json({"message":"profile updated",user})
+        res.json({ "message": "profile updated", user })
     }
     catch (error) {
         res.status(500).json({

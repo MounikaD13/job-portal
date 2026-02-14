@@ -60,7 +60,7 @@ export default function Login() {
 
           <input
             type="email"
-            placeholder="Email address"
+            placeholder="example@email.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
@@ -69,13 +69,19 @@ export default function Login() {
 
           <input
             type="password"
-            placeholder="Password"
+            placeholder="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             className="w-full px-[1rem] py-[0.9rem] border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#22e1a1]"
           />
-
+          <div className="flex justify-end">
+            <span className="text-purple-500 text-[0.9rem] font-semibold">
+              <Link to="/forgot-password" className="underline hover:no-underline">
+                Forgot Password?
+              </Link>
+            </span>
+          </div>
           <button
             type="submit"
             disabled={loading}
@@ -83,12 +89,11 @@ export default function Login() {
           >
             {loading ? "Logging in..." : "Login"}
           </button>
-
         </form>
 
         <p className="text-center text-[0.9rem] mt-[1.4rem] text-slate-600">
           Don’t have an account?
-          <Link to="/register" className="text-purple-700 font-semibold ml-[0.3rem]">
+          <Link to="/register" className="text-purple-700 font-semibold ml-[0.3rem] hover:underline">
             Register
           </Link>
         </p>

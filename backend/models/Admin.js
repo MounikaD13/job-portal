@@ -11,5 +11,7 @@ const adminSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    resetOtp:String,
+    resetOtpExpire:Date,
 })
 module.exports=mongoose.model("Admin", adminSchema)

@@ -2,7 +2,7 @@ const mongoose = require("mongoose")
 const educationSchema = mongoose.Schema({
     degree: String,
     institution: String,
-    percentage: Number,
+    percentage: String,
     yearOfPassing: Number,
 });
 const jobSeekerSchema = new mongoose.Schema({
@@ -16,7 +16,6 @@ const jobSeekerSchema = new mongoose.Schema({
         required: true,
         unique: true,
         lowercase: true,
-        trim: true
     },
     password: {
         type: String,
@@ -43,6 +42,14 @@ const jobSeekerSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
+    profilePicId:{
+        type:mongoose.Schema.Types.ObjectId
+    },
+    resumeId:{
+       type:mongoose.Schema.Types.ObjectId
+    },
+    resetOtp:String,
+    resetOtpExpire:Date,
     verificationOtp: {
         type: String
     },

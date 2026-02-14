@@ -46,8 +46,16 @@ export default function Register() {
       });
       setOtpSent(true);
       showMessage(res.data.message, 'success');
-    } catch {
-      showMessage(error.response?.data?.message ||'Failed to send OTP', 'error');
+    } catch (error) {   
+
+    if (error.response?.status === 409) {
+      showMessage("You are already registered. Please login.", "error");
+    } else {
+      showMessage(
+        error.response?.data?.message || "Failed to send OTP",
+        "error"
+      );
+    }
     } finally {
       setLoading(false);
     }
@@ -175,7 +183,9 @@ try {
                 {otpSent ? 'Resend OTP' : 'Send OTP'}
               </button>
             </div>
-            <span className='text-slate-500'>Already  have an account?<Link to="/login" className='text-purple-700'> Login</Link></span>
+            <span className='text-slate-500 '>Already  have an account?
+              <Link to="/login" className='text-purple-700 hover:underline'> Login</Link>
+            </span>
 
             {/* OTP */}
             {otpSent && (

@@ -32,6 +32,8 @@ const recruiterSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
+    resetOtp:String,
+    resetOtpExpire:Date,
     verificationOtp: {
         type: String
     },
