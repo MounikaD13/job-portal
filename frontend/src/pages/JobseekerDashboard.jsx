@@ -207,7 +207,7 @@ export default function JobSeekerProfile() {
       <div className="max-w-3xl mx-auto px-5 py-10 pb-20">
 
         {/* Hero Card */}
-        <div className="relative overflow-hidden bg-green-900 rounded-2xl p-9 flex items-center gap-7 mb-6 flex-wrap sm:flex-nowrap">
+        <div className="relative overflow-hidden bg-[#0f172a]  rounded-2xl p-9 flex items-center gap-7 mb-6 flex-wrap sm:flex-nowrap">
           <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
           <div className="relative flex-shrink-0 ">
             {picUrl
