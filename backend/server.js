@@ -4,6 +4,8 @@ const cors = require("cors")
 const cookieParser = require("cookie-parser")
 require("dotenv").config()
 const authRoutes = require("./routes/auth")
+const jobseekerRoute=require("./routes/jobseekerRoutes")
+const { initGridFS } = require("./utils/Gridfs")
 const app = express()
 
 app.use(express.json())
@@ -15,11 +17,14 @@ app.use(cors({
 app.use(cookieParser())
 
 mongoose.connect(process.env.MONGODB_URL)
-    .then(() => console.log("MongoDB connected successfully"))
+    .then(() => {
+        console.log("MongoDB connected successfully")
+        initGridFS() //this will called after connection only
+    })
     .catch((err) => console.log("MongoDB connection error:", err))
 
-
 app.use("/api", authRoutes)
+app.use("/api/jobseeker",jobseekerRoute)
 app.get("/", (req, res) => {
     res.json({ message: "Job Portal API is running" })
 })

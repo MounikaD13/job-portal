@@ -42,20 +42,19 @@ const jobSeekerSchema = new mongoose.Schema({
         type: Number,
         default: 0,
     },
-    profilePicId:{
-        type:mongoose.Schema.Types.ObjectId
+    //gridfs file ids
+    profilePicId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
     },
-    resumeId:{
-       type:mongoose.Schema.Types.ObjectId
+    resumeId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
     },
-    resetOtp:String,
-    resetOtpExpire:Date,
-    verificationOtp: {
-        type: String
-    },
-    otpExpires: {
-        type: Date
-    },
+    resetOtp: String,
+    resetOtpExpire: Date,
+    verificationOtp: String,
+    otpExpires: Date,
     isVerified: {
         type: Boolean,
         default: false

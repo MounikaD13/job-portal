@@ -6,7 +6,7 @@ const Recruiter = require("../models/Recruiter")
 const Admin = require("../models/Admin")
 const transporter = require("../utils/mail")
 const jwt = require("jsonwebtoken")
-
+const authMiddleware = require("../middleware/authMiddleware")
 // Helper function to get the appropriate model based on role
 const getModel = (role) => {
     if (role === "jobseeker") return JobSeeker
@@ -181,14 +181,14 @@ router.post("/register", async (req, res) => {
 })
 
 //tokens
-const generalTokens = (user) => {
+const generalTokens = (user, role) => {
     const accessToken = jwt.sign(
-        { id: user._id, email: user.email },
+        { id: user._id, email: user.email, role },
         process.env.JWT_SECRET,
         { expiresIn: "15m" }
     )
     const refreshToken = jwt.sign(
-        { id: user._id },
+        { id: user._id, role },
         process.env.JWT_REFRESH_SECRET,
         { expiresIn: "7d" }
     )
@@ -232,7 +232,7 @@ router.post("/login", async (req, res) => {
         if (!isMatch)
             return res.status(401).json({ "message": "invalid password" })
         //token
-        const { accessToken, refreshToken } = generalTokens(user)
+        const { accessToken, refreshToken } = generalTokens(user, role)
         res.cookie('refreshToken', refreshToken, {
             httpOnly: true,
             path: "/",
@@ -250,6 +250,53 @@ router.post("/login", async (req, res) => {
     catch (error) {
         res.status(500).json({ message: "Login failed", error });
     }
+})
+
+//refresh token
+router.post("/refresh-token", async (req, res) => {
+    const token = req.cookies.refreshToken
+    if (!token)
+        return res.status(401).json({ "message": "no token apperead" })
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
+        let user = null
+        console.log("for checking the refresh token", decoded)
+        if (decoded.role === "jobseeker") {
+            user = await JobSeeker.findById(decoded.id)
+        }
+        else if (decoded.role === "recruiter") {
+            user = await Recruiter.findById(decoded.id)
+        }
+        else if (decoded.role === "admin") {
+            user = await Admin.findById(decoded.id)
+        }
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" })
+        }
+
+        const { accessToken } = generalTokens(user, decoded.role)
+
+        // const newAccessToken = jwt.sign(
+        //     { id: user._id, email: user.email,role: decoded.role },
+        //     process.env.JWT_SECRET,
+        //     { expiresIn: "15m" }
+        // )
+        res.json({
+            accessToken: accessToken,
+            user: { id: user._id, email: user.email, name: user.name, role: decoded.role }
+        })
+    }
+    catch (err) {
+        console.log("error from refresh token", err)
+        return res.status(401).json({ "message": "invalid refresh token" })
+    }
+})
+
+//logout
+router.post("/logout", (req, res) => {
+    res.clearCookie("refreshToken")
+    res.status(200).json({ "message": 'logged out successfully' })
 })
 
 //forgot password
@@ -272,9 +319,15 @@ router.post("/forgot-password", async (req, res) => {
             from: process.env.EMAIL_USER,
             to: email,
             subject: "your OTP for password reset",
-            html: `
-        <h2>your otp <b>${otp}</b></h2>
-        <p>this will expires in 10 minutes</p> `
+            html: `<div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+                    <div style="max-width: 600px; margin: 0 auto; background-color: white; padding: 30px; border-radius: 10px;">
+                        <h2 style="color: #333;">Job Portal - Email Verification</h2>
+                        <p style="font-size: 16px; color: #555;">Your OTP for registration is:</p>
+                        <h1 style="color: #8c4caf; font-size: 30px; letter-spacing: 5px;">${otp}</h1>
+                        <p style="color: #777;">This OTP will expire in <strong>10 minutes</strong>.</p>
+                        <p style="color: #777;">If you didn't request this, please ignore this email.</p>
+                    </div>
+                </div>`
         })
         res.status(200).json({ "message": "sent otp successfully" })
     }
@@ -327,7 +380,7 @@ router.post("/reset-password", async (req, res) => {
         user.resetOtp = undefined
         user.resetOtpExpire = undefined
         await user.save()
-        res.status(200).json({ "message": "password rest succesffuly" })
+        res.status(200).json({ "message": "password reset succesffuly" })
 
     } catch (error) {
         console.log(error);
@@ -335,33 +388,41 @@ router.post("/reset-password", async (req, res) => {
     }
 })
 
-router.put("/jobseekerProfile", async (req, res) => {
-    try {
-        const user = await JobSeeker.findById(req.user._id)
-        if (!user) {
-            return res.status(404).json({ "message": "jobseeker not found" })
-        }
-        const { skills, education, experience } = req.body
-        if (skills) {
-            user.skills = skills;
-        }
-        if (education) {
-            user.education = education
-        }
-        if (experience) {
-            user.experience = experience
-        }
-        if (req.file) {
-            user.resume = `/uploads/resumes/${req.file.filename}`
-        }
-        await user.save()
-        res.json({ "message": "profile updated", user })
-    }
-    catch (error) {
-        res.status(500).json({
-            "message": "Profile edit failed",
-            error: error.message
-        })
-    }
+//refresh page then
+router.get("/me", authMiddleware(), (req, res) => {
+    res.json({
+        user: req.user,
+        role: req.user.role
+    })
 })
+
+// router.put("/jobseekerProfile", async (req, res) => {
+//     try {
+//         const user = await JobSeeker.findById(req.user._id)
+//         if (!user) {
+//             return res.status(404).json({ "message": "jobseeker not found" })
+//         }
+//         const { skills, education, experience } = req.body
+//         if (skills) {
+//             user.skills = skills;
+//         }
+//         if (education) {
+//             user.education = education
+//         }
+//         if (experience) {
+//             user.experience = experience
+//         }
+//         if (req.file) {
+//             user.resume = `/uploads/resumes/${req.file.filename}`
+//         }
+//         await user.save()
+//         res.json({ "message": "profile updated", user })
+//     }
+//     catch (error) {
+//         res.status(500).json({
+//             "message": "Profile edit failed",
+//             error: error.message
+//         })
+//     }
+// })
 module.exports = router 

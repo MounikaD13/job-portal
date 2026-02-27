@@ -13,5 +13,9 @@ const adminSchema = new mongoose.Schema({
     },
     resetOtp:String,
     resetOtpExpire:Date,
+    isVerified: {
+        type: Boolean,
+        default: true
+    },
 })
 module.exports=mongoose.model("Admin", adminSchema)

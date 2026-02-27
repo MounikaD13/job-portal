@@ -43,38 +43,58 @@ export default function VerifyReset() {
         }
     }
     return (
-        <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-[#3fd1f2] to-[#22e1a1] px-[5%] py-[4rem]">
+        <div className="min-h-screen flex items-center justify-center bg-[#0f172a] px-[5%]">
 
-            <div className="w-full max-w-[30rem] bg-white rounded-[1.5rem] shadow-xl p-[3rem]">
-                <div className="text-center mb-[2.5rem]">
-                    <h1 className="text-[1.8rem] font-semibold text-gray-800">
-                        Verify OTP & Reset Password
-                    </h1>
-                    <p className="text-[0.9rem] text-gray-500 mt-[0.5rem]">
-                        Enter the OTP sent to your email and create a new password.
-                    </p>
-                </div>
+            {/* Card */}
+            <div className="
+                w-full max-w-[26rem]
+                bg-[#111827]
+                p-[2.5rem]
+                rounded-[1rem]
+                shadow-lg
+                border border-white/20
+            ">
+
+                <h2 className="text-white text-[1.6rem] font-semibold text-center">
+                    Verify & Reset Password
+                </h2>
+
+                <p className="text-gray-400 text-[0.9rem] text-center mt-[0.4rem] mb-[2rem]">
+                    Enter OTP and create a new password
+                </p>
+
+                {/* OTP FORM */}
                 {!otpVerified && (
-                    <form onSubmit={handleVerifyOtp} className="flex flex-col gap-[1.5rem]">
+                    <form onSubmit={handleVerifyOtp} className="flex flex-col gap-[1.2rem]">
 
-                        <div className="flex flex-col gap-[0.5rem]">
-                            <label className="text-[0.9rem] font-medium text-gray-700">
-                                Enter OTP
-                            </label>
-
-                            <input
-                                type="text"
-                                name="otp"
-                                value={otp}
-                                placeholder="Enter 6-digit OTP"
-                                onChange={(e) => setOtp(e.target.value)}
-                                className="w-full px-[1rem] py-[0.9rem] text-[0.95rem] border border-gray-300 rounded-[0.8rem] focus:outline-none focus:ring-[0.15rem] focus:ring-[#3fd1f2] transition-all duration-300"
-                            />
-                        </div>
+                        <input
+                            type="text"
+                            value={otp}
+                            placeholder="Enter OTP"
+                            onChange={(e) => setOtp(e.target.value)}
+                            className="
+                                w-full px-[1rem] py-[0.8rem]
+                                rounded-[0.6rem]
+                                bg-[#1f2937]
+                                text-white
+                                border border-gray-700
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        />
 
                         <button
                             type="submit"
-                            className="w-full py-[0.95rem] text-[1rem] font-medium rounded-[0.8rem] bg-gradient-to-r from-[#3fd1f2] to-[#22e1a1] text-white hover:opacity-90 transition-all duration-300"
+                            className="
+                                w-full py-[0.85rem]
+                                rounded-[0.6rem]
+                                bg-blue-600
+                                text-white
+                                font-medium
+                                hover:bg-blue-700
+                                transition
+                            "
                         >
                             Verify OTP
                         </button>
@@ -82,26 +102,38 @@ export default function VerifyReset() {
                     </form>
                 )}
 
+                {/* RESET PASSWORD FORM */}
                 {otpVerified && !passwordUpdated && (
-                    <form onSubmit={resetPassword} className="flex flex-col gap-[1.5rem]">
+                    <form onSubmit={resetPassword} className="flex flex-col gap-[1.2rem]">
 
-                        <div className="flex flex-col gap-[0.5rem]">
-                            <label className="text-[0.9rem] font-medium text-gray-700">
-                                New Password
-                            </label>
-
-                            <input
-                                type="password"
-                                value={newPassword}
-                                placeholder="Enter new password"
-                                onChange={(e) => setNewPassword(e.target.value)}
-                                className="w-full px-[1rem] py-[0.9rem] text-[0.95rem] border border-gray-300 rounded-[0.8rem] focus:outline-none focus:ring-[0.15rem] focus:ring-[#22e1a1] transition-all duration-300"
-                            />
-                        </div>
+                        <input
+                            type="password"
+                            value={newPassword}
+                            placeholder="New Password"
+                            onChange={(e) => setNewPassword(e.target.value)}
+                            className="
+                                w-full px-[1rem] py-[0.8rem]
+                                rounded-[0.6rem]
+                                bg-[#1f2937]
+                                text-white
+                                border border-gray-700
+                                focus:outline-none
+                                focus:ring-2
+                                focus:ring-blue-500
+                            "
+                        />
 
                         <button
                             type="submit"
-                            className="w-full py-[0.95rem] text-[1rem] font-medium rounded-[0.8rem] bg-gradient-to-r from-[#3fd1f2] to-[#22e1a1] text-white hover:opacity-90 transition-all duration-300"
+                            className="
+                                w-full py-[0.85rem]
+                                rounded-[0.6rem]
+                                bg-cyan-400
+                                text-white
+                                font-medium
+                                hover:bg-blue-700
+                                transition
+                            "
                         >
                             Update Password
                         </button>
@@ -110,17 +142,16 @@ export default function VerifyReset() {
                 )}
 
                 {/* Footer */}
-                <div className="mt-[2rem] text-center">
-                    <p
+                <p className="text-center text-gray-400 text-[0.85rem] mt-[1.8rem]">
+                    Remember password?
+                    <span
                         onClick={() => navigate("/login")}
-                        className="text-[0.85rem] text-[#3fd1f2] font-medium cursor-pointer hover:underline"
+                        className="ml-1 text-blue-400 cursor-pointer hover:underline"
                     >
                         Back to Login
-                    </p>
-                </div>
-
+                    </span>
+                </p>
             </div>
         </div>
-    );
-
+    )
 }
