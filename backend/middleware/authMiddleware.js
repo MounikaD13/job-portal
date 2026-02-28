@@ -1,6 +1,10 @@
 const jwt= require("jsonwebtoken")
+const Jobseeker = require("../models/JobSeeker")
+const Recruiter = require("../models/Recruiter")
+const Admin = require("../models/Admin") 
+
 const authMiddleware=(roles = []) => {
-    return (req,res,next)=>{
+    return async (req,res,next)=>{
     try{
         const authHeader = req.headers["authorization"]
         if (!authHeader) {
@@ -8,10 +12,27 @@ const authMiddleware=(roles = []) => {
         }
         const token = authHeader.split(" ")[1]
         const decoded = jwt.verify(token, process.env.JWT_SECRET)
+        let user
+
+      // ✅ choose model based on role
+      if (decoded.role === "jobseeker") {
+        user = await Jobseeker.findById(decoded.id).select("-password")
+      }
+      else if (decoded.role === "recruiter") {
+        user = await Recruiter.findById(decoded.id).select("-password")
+      }
+      else if (decoded.role === "admin") {
+        user = await Admin.findById(decoded.id).select("-password")
+      }
+
+      if (!user) {
+        return res.status(401).json({ message: "User not found" })
+      }
+
         if (roles.length && !roles.includes(decoded.role)) {
       return res.status(403).json({ message: "Forbidden" });
     }
-        req.user = decoded //{id,email,role}
+        req.user = user //{id,email,role}
         next()
     }
     catch(err){

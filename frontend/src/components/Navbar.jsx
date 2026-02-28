@@ -1,38 +1,38 @@
-// import React, { useContext } from 'react'
-// import { AuthContext } from "../context/AuthContext"
-// import { Link } from 'react-router-dom'
+/*import React, { useContext } from 'react'
+import { AuthContext } from "../context/AuthContext"
+import { Link } from 'react-router-dom'
 
-// export default function Navbar() {
-//   const { logoutUser, user, role } = useContext(AuthContext)
+export default function Navbar() {
+  const { logoutUser, user, role } = useContext(AuthContext)
 
-//   return (
-//     <div>
-//       <Link to='/'>Home</Link>
+  return (
+    <div>
+      <Link to='/'>Home</Link>
 
-//       {!user && (
-//         <>
-//           <Link to='/login'>Login</Link>
-//           <Link to='/register'>Register</Link>
-//         </>
-//       )}
+      {!user && (
+        <>
+          <Link to='/login'>Login</Link>
+          <Link to='/register'>Register</Link>
+        </>
+      )}
 
-//       {role === 'jobseeker' ? (
-//         <>
-//           <Link to='/jobseeker/jobs'>Jobs</Link>
-//           <Link to='/jobseeker/applied-jobs'>Applied</Link>
-//           <Link to='/jobseeker/profile'>Profile</Link>
-//           <button onClick={logoutUser}>Logout</button>
-//         </>
-//       ) : role === 'recruiter' ? (
-//         <>
-//           <Link to='/recruiter/profile'>Profile</Link>
-//           <Link to='/recruiter/create-jobs'>Add Jobs</Link>
-//           <button onClick={logoutUser}>Logout</button>
-//         </>
-//       ) : null}
-//     </div>
-//   )
-// }
+      {role === 'jobseeker' ? (
+        <>
+          <Link to='/jobseeker/jobs'>Jobs</Link>
+          <Link to='/jobseeker/applied-jobs'>Applied</Link>
+          <Link to='/jobseeker/profile'>Profile</Link>
+          <button onClick={logoutUser}>Logout</button>
+        </>
+      ) : role === 'recruiter' ? (
+        <>
+          <Link to='/recruiter/profile'>Profile</Link>
+          <Link to='/recruiter/create-jobs'>Add Jobs</Link>
+          <button onClick={logoutUser}>Logout</button>
+        </>
+      ) : null}
+    </div>
+  )
+}*/
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { AuthContext } from "../context/AuthContext"
 import { Link, useLocation, useNavigate } from 'react-router-dom'
@@ -49,12 +49,10 @@ export default function Navbar() {
   const isActive = (path) => location.pathname === path
 
   const linkClass = (path) =>
-    `relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${
-      isActive(path)
-        ? 'text-indigo-600 bg-indigo-50'
-        : 'text-slate-600 hover:text-indigo-600 hover:bg-slate-100'
+    `relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${isActive(path)
+      ? 'text-indigo-600 bg-indigo-50'
+      : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-100'
     }`
-
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -70,15 +68,15 @@ export default function Navbar() {
 
   const navLinks = role === 'jobseeker'
     ? [
-        { to: '/jobseeker/jobs', label: 'Browse Jobs' },
-        { to: '/jobseeker/applied-jobs', label: 'Applied Jobs' },
-      ]
+      { to: '/jobseeker/jobs', label: 'Browse Jobs' },
+      { to: '/jobseeker/applied-jobs', label: 'Applied Jobs' },
+    ]
     : role === 'recruiter'
-    ? [
+      ? [
         { to: '/recruiter/create-jobs', label: 'Post a Job' },
         { to: '/recruiter/applied-jobs', label: 'Post a Job' },
       ]
-    : []
+      : []
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -95,7 +93,7 @@ export default function Navbar() {
 
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2 group shrink-0">
-            <div className="w-8 h-8 rounded-lg bg-[#0f172a] flex items-center justify-center shadow-sm group-hover:bg-indigo-700 transition-colors">
+            <div className="w-8 h-8 rounded-lg bg-[#0f172a] flex items-center justify-center shadow-sm group-hover:bg-cyan-700 transition-colors">
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
               </svg>
@@ -144,9 +142,8 @@ export default function Navbar() {
               </>
             ) : (
               <div className="flex items-center gap-3">
-                <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${
-                  role === 'recruiter' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
-                }`}>
+                <span className={`px-2.5 py-0.5 text-xs font-semibold rounded-full ${role === 'recruiter' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                  }`}>
                   {role === 'recruiter' ? '🏢 Recruiter' : '👤 Job Seeker'}
                 </span>
 
@@ -154,7 +151,7 @@ export default function Navbar() {
                 <div className="relative" ref={dropdownRef}>
                   <button
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="w-8 h-8 rounded-full bg-indigo-100 border-2 border-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-600 hover:border-indigo-400 hover:bg-indigo-200 transition-all focus:outline-none"
+                    className="w-8 h-8 rounded-full bg-cyan-100 border-2 border-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-600 hover:border-indigo-400 hover:bg-indigo-200 transition-all focus:outline-none"
                   >
                     {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? 'U'}
                   </button>
@@ -165,7 +162,7 @@ export default function Navbar() {
                       {/* User info */}
                       <div className="px-3 py-2 border-b border-slate-100 mb-1">
                         <p className="text-xs font-semibold text-slate-800 truncate">
-                          {user?.name ?? user?.email ?? 'User'}
+                          {user?.name.toUpperCase() ?? user?.email ?? 'User'}
                         </p>
                         <p className="text-xs text-slate-400 truncate">{user?.email}</p>
                       </div>
@@ -270,9 +267,8 @@ export default function Navbar() {
                   </div>
                   <div>
                     <p className="text-sm font-semibold text-slate-800">{user?.email ?? 'User'}</p>
-                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                      role === 'recruiter' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
-                    }`}>
+                    <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${role === 'recruiter' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
+                      }`}>
                       {role === 'recruiter' ? 'Recruiter' : 'Job Seeker'}
                     </span>
                   </div>

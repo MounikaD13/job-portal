@@ -260,7 +260,7 @@ router.post("/refresh-token", async (req, res) => {
     try {
         const decoded = jwt.verify(token, process.env.JWT_REFRESH_SECRET)
         let user = null
-        console.log("for checking the refresh token", decoded)
+        // console.log("for checking the refresh token", decoded)
         if (decoded.role === "jobseeker") {
             user = await JobSeeker.findById(decoded.id)
         }
