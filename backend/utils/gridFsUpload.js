@@ -8,10 +8,8 @@ const initGridFS = () => {
         mongoose.connection.db,
         { bucketName: "uploads" }
     )
-
-    console.log("✅ GridFS Ready")
+    console.log("GridFS Ready")
 }
-
 const getBucket = () => {
     if (!bucket)
         throw new Error("GridFS not initialized")
@@ -21,11 +19,8 @@ const getBucket = () => {
 // ✅ MAIN FUNCTION
 const uploadToGridFS = (file, folder, userId) => {
     return new Promise((resolve, reject) => {
-
         if (!file) return resolve(null)
-
         const bucket = getBucket()
-
         const uploadStream =
             bucket.openUploadStream(
                 `${folder}_${userId}_${Date.now()}_${file.originalname}`,
@@ -37,13 +32,10 @@ const uploadToGridFS = (file, folder, userId) => {
                     }
                 }
             )
-
         uploadStream.end(file.buffer)
-
         uploadStream.on("finish",
             () => resolve(uploadStream.id)
         )
-
         uploadStream.on("error", reject)
     })
 }
