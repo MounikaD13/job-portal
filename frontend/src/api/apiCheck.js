@@ -5,7 +5,8 @@ const API = axios.create({
     withCredentials: true
 })
 // Attach access token to every request
-API.interceptors.request.use((config) => { //An interceptor is a function that runs before every request is sent to the backend.
+API.interceptors.request.use((config) => { 
+  //An interceptor is a function that runs before every request is sent to the backend.
     const token = localStorage.getItem("token")
     if (token) {
         //Attaching Token to the Header
@@ -41,7 +42,6 @@ API.interceptors.response.use(
   res => res,
   async error => {
     const originalRequest = error.config
-
     if (
       error.response &&
       error.response.status === 401 &&

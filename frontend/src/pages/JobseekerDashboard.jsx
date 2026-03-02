@@ -1,19 +1,12 @@
 import { useState, useEffect, useRef } from "react"
-import axios from "axios"
-import toast, { Toaster } from "react-hot-toast"
+import api from '../api/apiCheck'
+import toast from "react-hot-toast";
 import {
   User, Mail, Phone, MapPin, Briefcase, GraduationCap,
   Code, FileText, Upload, Pencil, Trash2, Plus, Check,
-  X, Download, Camera, LogOut
+  X, Download, Camera, Trash
 } from "lucide-react"
 
-const api = axios.create({ baseURL: "/api/jobseeker" })
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token")
-  if (token) config.headers.Authorization = `Bearer ${token}`
-  return config
-})
 
 const SkillTag = ({ skill, onRemove, editable }) => (
   <span className="inline-flex items-center gap-1.5 bg-green-50 text-green-800 text-xs font-medium px-3 py-1.5 rounded-full">
@@ -48,12 +41,13 @@ export default function JobSeekerProfile() {
   const [eduForm, setEduForm] = useState({ degree: "", institution: "", percentage: "", yearOfPassing: "" })
   const [addingEdu, setAddingEdu] = useState(false)
   const [picUrl, setPicUrl] = useState(null)
+  const [showImageModal, setShowImageModal] = useState(false)
   const picRef = useRef()
   const resumeRef = useRef()
 
   const fetchProfile = async () => {
     try {
-      const { data } = await api.get("/profile")
+      const { data } = await api.get("/jobseeker/profile")
       setProfile(data.profile)
       setForm({
         name: data.profile.name,
@@ -71,31 +65,36 @@ export default function JobSeekerProfile() {
 
   const fetchProfilePic = async () => {
     try {
-      const token = localStorage.getItem("token")
-      const res = await fetch("/api/jobseeker/profile-pic", {
-        headers: { Authorization: `Bearer ${token}` },
+      const res = await api.get("/jobseeker/profile-pic", {
+        responseType: "blob"
       })
-      if (res.ok) {
-        const blob = await res.blob()
-        setPicUrl(URL.createObjectURL(blob))
-      }
+      const imageUrl = URL.createObjectURL(res.data)
+      setPicUrl(imageUrl)
     } catch { }
   }
 
-  useEffect(() => { fetchProfile(); fetchProfilePic() }, [])
+  useEffect(() => {
+    const load = async () => {
+      await fetchProfile()
+      await fetchProfilePic()
+    }
+    load()
+  }, [])
 
   const saveInfo = async () => {
     try {
-      await api.put("/profile", { name: form.name, mobileNumber: form.mobileNumber, address: form.address })
+      await api.put("/jobseeker/profile", { name: form.name, mobileNumber: form.mobileNumber, address: form.address })
       toast.success("Info updated!")
       setActiveEdit(null)
       fetchProfile()
-    } catch { toast.error("Failed to update info") }
+    } catch {
+      toast.error("Failed to update info")
+    }
   }
 
   const saveSkills = async () => {
     try {
-      await api.put("/profile", { skills: form.skills, experience: form.experience })
+      await api.put("/jobseeker/profile", { skills: form.skills, experience: form.experience })
       toast.success("Skills updated!")
       setActiveEdit(null)
       fetchProfile()
@@ -115,7 +114,7 @@ export default function JobSeekerProfile() {
   const addEducation = async () => {
     if (!eduForm.degree || !eduForm.institution) { toast.error("Degree and institution are required"); return }
     try {
-      await api.post("/education", eduForm)
+      await api.post("/jobseeker/education", eduForm)
       toast.success("Education added!")
       setEduForm({ degree: "", institution: "", percentage: "", yearOfPassing: "" })
       setAddingEdu(false)
@@ -126,7 +125,7 @@ export default function JobSeekerProfile() {
   const deleteEducation = async (eduId) => {
     if (!confirm("Delete this education entry?")) return
     try {
-      await api.delete(`/education/${eduId}`)
+      await api.delete(`/jobseeker/education/${eduId}`)
       toast.success("Education removed")
       fetchProfile()
     } catch { toast.error("Failed to delete education") }
@@ -134,7 +133,7 @@ export default function JobSeekerProfile() {
 
   const saveEducation = async (eduId) => {
     try {
-      await api.put(`/education/${eduId}`, eduForm)
+      await api.put(`/jobseeker/education/${eduId}`, eduForm)
       toast.success("Education updated!")
       setActiveEdit(null)
       fetchProfile()
@@ -147,41 +146,79 @@ export default function JobSeekerProfile() {
   }
 
   const uploadPic = async (e) => {
-    const file = e.target.files[0]; if (!file) return
-    const fd = new FormData(); fd.append("profilePic", file)
-    try { await api.post("/upload-profile-pic", fd); toast.success("Profile picture updated!"); fetchProfilePic() }
-    catch (err) { toast.error(err.response?.data?.message || "Upload failed") }
+    const file = e.target.files[0];
+    if (!file) return
+    const fd = new FormData();
+    fd.append("profilePic", file)
+    try {
+      await api.post("/jobseeker/upload-profile-pic", fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast.success("Profile picture updated!");
+      setPicUrl(null)
+      await fetchProfilePic()
+    }
+    catch (err) {
+      toast.error(err.response?.data?.message || "Upload failed")
+    }
   }
+  const deleteProfilePic = async () => {
+    if (!confirm("Delete profile picture?")) return
 
-  const uploadResume = async (e) => {
-    const file = e.target.files[0]; if (!file) return
-    const fd = new FormData(); fd.append("resume", file)
-    try { await api.post("/upload-resume", fd); toast.success("Resume uploaded!"); fetchProfile() }
-    catch (err) { toast.error(err.response?.data?.message || "Upload failed") }
+    try {
+      await api.delete("/jobseeker/profile-pic")
+      toast.success("Profile picture deleted")
+      setPicUrl(null)
+    } catch (err) {
+      toast.error("Failed to delete profile picture")
+    }
+  }
+  const handleResumeUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return
+    const fd = new FormData();
+    fd.append("resume", file)
+    try {
+      await api.post("/jobseeker/upload-resume", fd, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast.success("Resume uploaded!");
+      fetchProfile()
+    }
+    catch (err) {
+      toast.error(err.response?.data?.message || "Upload failed")
+    }
   }
 
   const downloadResume = async () => {
     try {
-      const token = localStorage.getItem("token")
-      const res = await fetch("/api/jobseeker/resume", { headers: { Authorization: `Bearer ${token}` } })
-      if (!res.ok) { toast.error("No resume found"); return }
-      const blob = await res.blob()
-      const url = URL.createObjectURL(blob)
-      const a = document.createElement("a"); a.href = url; a.download = profile.resumeFilename || "resume.pdf"; a.click()
-    } catch { toast.error("Failed to download resume") }
+      const res = await api.get("/jobseeker/resume", {
+        responseType: "blob"
+      })
+      const url = URL.createObjectURL(res.data)
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = profile.resumeFilename || "resume.pdf";
+      a.click()
+    } catch {
+      toast.error("Failed to download resume")
+    }
   }
 
   const deleteResume = async () => {
     if (!confirm("Delete your resume?")) return
-    try { await api.delete("/resume"); toast.success("Resume deleted"); fetchProfile() }
+    try {
+      await api.delete("/jobseeker/resume");
+      toast.success("Resume deleted"); fetchProfile()
+    }
     catch { toast.error("Failed to delete resume") }
   }
 
-  const logout = async () => {
-    await axios.post("/api/logout", {}, { withCredentials: true })
-    localStorage.clear()
-    window.location.href = "/login"
-  }
+  // const logout = async () => {
+  //   await axios.post("/api/logout", {}, { withCredentials: true })
+  //   localStorage.clear()
+  //   window.location.href = "/login"
+  // }
 
   const inputCls = "w-full px-3.5 py-2.5 border border-gray-200 rounded-lg text-sm text-gray-900 bg-gray-50 outline-none focus:border-green-800 focus:bg-white transition-colors"
   const labelCls = "block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1.5"
@@ -203,7 +240,6 @@ export default function JobSeekerProfile() {
 
   return (
     <div className="bg-stone-100 min-h-screen">
-      <Toaster position="top-right" />
       <div className="max-w-3xl mx-auto px-5 py-10 pb-20">
 
         {/* Hero Card */}
@@ -211,12 +247,26 @@ export default function JobSeekerProfile() {
           <div className="absolute -top-10 -right-10 w-48 h-48 rounded-full bg-white/5 pointer-events-none" />
           <div className="relative flex-shrink-0 ">
             {picUrl
-              ? <img src={picUrl} alt="avatar" className="w-[90px] h-[90px] rounded-full object-cover border-[3px] border-white/30" />
-              : <div className="w-[90px] h-[90px] rounded-full bg-white/15 flex items-center justify-center border-[3px] border-white/20"><User size={36} color="rgba(255,255,255,0.6)" /></div>
+              ? <img
+                src={picUrl}
+                alt="avatar"
+                onClick={() => setShowImageModal(true)}
+                className="w-[90px] h-[90px] rounded-full object-cover border-[3px] border-white/30 cursor-pointer hover:scale-105 transition"
+              />
+              : <div className="w-[90px] h-[90px] rounded-full bg-white/15 flex items-center justify-center border-[3px] border-white/20">
+                <User size={36} color="rgba(255,255,255,0.6)" /></div>
             }
             <button className="absolute bottom-0 right-0 w-7 h-7 rounded-full bg-white border-none cursor-pointer flex items-center justify-center text-green-800 shadow-md hover:scale-110 transition-transform" onClick={() => picRef.current.click()}>
               <Camera size={13} />
             </button>
+            {picUrl && (
+              <button
+                onClick={deleteProfilePic}
+                className="absolute -bottom-0 -left-1 w-5 h-5 px-1 py-1 bg-red-600 text-white text-xs rounded-full items-center justify-center "
+              >
+                <Trash size={10} />
+              </button>
+            )}
             <input ref={picRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={uploadPic} />
           </div>
           <div className="flex-1 text-center sm:text-left">
@@ -360,10 +410,31 @@ export default function JobSeekerProfile() {
               <div className="text-gray-400 text-xs">PDF only · Max 5MB</div>
             </div>
           )}
-          <input ref={resumeRef} type="file" accept="application/pdf" className="hidden" onChange={uploadResume} />
+          <input ref={resumeRef} type="file" accept="application/pdf" className="hidden" onChange={handleResumeUpload} />
         </SectionCard>
 
       </div>
+      {showImageModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50">
+          <div className="relative">
+
+            {/* Close Button */}
+            <button
+              onClick={() => setShowImageModal(false)}
+              className="absolute -top-3 -right-3 bg-white text-black rounded-full w-8 h-8 flex items-center justify-center shadow-md hover:scale-110 transition"
+            >
+              <X size={16} />
+            </button>
+
+            {/* Enlarged Image */}
+            <img
+              src={picUrl}
+              alt="Profile Preview"
+              className="max-w-[90vw] max-h-[80vh] rounded-lg shadow-2xl"
+            />
+          </div>
+        </div>
+      )}
     </div>
   )
 }

@@ -4,8 +4,8 @@ const cors = require("cors")
 const cookieParser = require("cookie-parser")
 require("dotenv").config()
 const authRoutes = require("./routes/auth")
-const jobseekerRoute=require("./routes/jobseekerRoutes")
-const { initGridFS } = require("./utils/Gridfs")
+const jobseekerRoute = require("./routes/jobseekerRoutes")
+const { initGridFS } = require("./utils/gridFsUpload")
 const app = express()
 
 app.use(express.json())
@@ -16,7 +16,7 @@ app.use(cors({
 }))
 app.use(cookieParser())
 
-mongoose.connect(process.env.MONGODB_URL)
+/*mongoose.connect(process.env.MONGODB_URL)
     .then(() => {
         console.log("MongoDB connected successfully")
         initGridFS() //this will called after connection only
@@ -36,4 +36,26 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`)
+})*/
+mongoose.connect(process.env.MONGODB_URL)
+    .then(() => {
+        console.log("MongoDB connected successfully")
+        initGridFS()
+        app.use("/api", authRoutes)
+        app.use("/api/jobseeker", jobseekerRoute)
+        app.get("/", (req, res) => {
+            res.json({ message: "Job Portal API is running" })
+        })
+        const PORT = process.env.PORT || 5000
+        app.listen(PORT, () => {
+            console.log(`Server running on port ${PORT}`)
+        })
+    })
+    .catch((err) => {
+        console.log("MongoDB connection error:", err)
+    })
+// global error handler
+app.use((err, req, res, next) => {
+    console.error(err.stack)
+    res.status(500).json({ message: "Something went wrong!" })
 })

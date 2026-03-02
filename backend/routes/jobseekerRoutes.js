@@ -1,27 +1,22 @@
-// const express=require("express")
-// const router=express.Router()
-// const authMiddleware=require("../middleware/authMiddleware")
-// router.get("/profile",authMiddleware,(req,res)=>{
-//     res.json({"message":"protected data to be accessed successfully",
-//         user:req.user})
-// })
-// module.exports=router
 const express = require("express")
 const router = express.Router()
 const mongoose = require("mongoose")
 const Jobseeker = require("../models/JobSeeker")
 const authMiddleware = require("../middleware/authMiddleware")
-const { getGfsBucket, uploadProfilePic, uploadResume } = require('../utils/Gridfs')
+const upload = require("../middleware/upload")
+const { initGridFS,
+    getBucket,
+    uploadToGridFS } = require("../utils/gridFsUpload")
 
-//to delete gridfs files by objId
-const deleteFromGridFS = async (fileId) => {
-    if (!fileId) return
-    try {
-        await getGfsBucket().delete(new mongoose.Types.ObjectId(fileId))
-    } catch (err) {
-        console.log("GridFS delete warning (file may not exist):", err.message)
-    }
-}
+// //to delete gridfs files by objId
+// const deleteFromGridFS = async (fileId) => {
+//     if (!fileId) return
+//     try {
+//         await getGfsBucket().delete(new mongoose.Types.ObjectId(fileId))
+//     } catch (err) {
+//         console.log("GridFS delete warning (file may not exist):", err.message)
+//     }
+// }
 //these all have this start /api/jobseeker/
 
 router.put("/profile", authMiddleware(["jobseeker"]), async (req, res) => {
@@ -133,150 +128,191 @@ router.delete("/education/:eduId", authMiddleware(["jobseeker"]), async (req, re
 router.post(
     "/upload-profile-pic",
     authMiddleware(["jobseeker"]),
-    (req, res, next) => {
-        uploadProfilePic.single("profilePic")(req, res, (err) => {
-            if (err) return res.status(400).json({ message: err.message })
-            next()
-        })
-    },
+    upload.single("profilePic"),
     async (req, res) => {
         try {
-            if (!req.file) return res.status(400).json({ message: "No file uploaded" })
-
             const user = await Jobseeker.findById(req.user.id)
-            if (!user) return res.status(404).json({ message: "JobSeeker not found" })
+            if (!req.file)
+                return res.status(400).json({ message: "No file" })
+            // delete old
+            if (user.profilePicId) {
+                await getBucket().delete(user.profilePicId)
+            }
+            const fileId =
+                await uploadToGridFS(req.file, "profilePic", req.user.id)
+            user.profilePicId = fileId
+            await user.save()
+            res.json({ message: "Profile pic uploaded" })
+        }
+        catch (err) {
+            console.log(err)
+            res.status(500).json({ message: "Upload failed" })
+        }
+    })
+// see profile pic 
+router.get(
+    "/profile-pic",
+    authMiddleware(["jobseeker"]),
+    async (req, res) => {
+        try {
+            const user =
+                await Jobseeker.findById(req.user.id).select("profilePicId")
+            if (!user || !user.profilePicId)
+                return res.status(404).json({ message: "No profile picture" })
+            const bucket = getBucket()
+            const fileId = new mongoose.Types.ObjectId(user.profilePicId)
+            const files =
+                await bucket.find({ _id: fileId }).toArray()
+            if (!files.length)
+                return res.status(404).json({ message: "File not found" })
+            // ✅ important
+            res.set("Content-Type", files[0].contentType || "image/jpeg")
+            bucket.openDownloadStream(fileId).pipe(res)
+        } catch (err) {
+            console.log(err)
+            res.status(500).json({ message: "Failed to fetch" })
+        }
+    })
+// delete profile pic
+router.delete(
+    "/profile-pic",
+    authMiddleware(["jobseeker"]),
+    async (req, res) => {
+        try {
 
-            // Delete old profile pic from GridFS if exists
-            if (user.profilePicId) await deleteFromGridFS(user.profilePicId)
+            const user =
+                await Jobseeker.findById(req.user.id)
 
-            user.profilePicId = req.file.id
+            if (!user.profilePicId)
+                return res.status(404)
+                    .json({ message: "No profile pic" })
+
+            await getBucket()
+                .delete(
+                    new mongoose.Types.ObjectId(
+                        user.profilePicId
+                    )
+                )
+
+            user.profilePicId = null
             await user.save()
 
-            res.status(200).json({ message: "Profile picture uploaded successfully" })
-        } catch (error) {
-            console.log("Error uploading profile pic:", error)
-            res.status(500).json({ message: "Failed to upload profile picture" })
+            res.json({
+                message: "Profile picture deleted"
+            })
+
+        } catch (err) {
+            console.log(err)
+            res.status(500)
+                .json({ message: "Delete failed" })
         }
-    }
-)
-// see profile pic 
-router.get("/profile-pic", authMiddleware(["jobseeker"]), async (req, res) => {
-    try {
-        const user = await Jobseeker.findById(req.user.id).select("profilePicId")
-        if (!user || !user.profilePicId)
-            return res.status(404).json({ message: "No profile picture found" })
-
-        const bucket = getGfsBucket()
-        const fileId = new mongoose.Types.ObjectId(user.profilePicId)
-
-        const files = await bucket.find({ _id: fileId }).toArray()
-        if (!files.length)
-            return res.status(404).json({ message: "File not found in storage" })
-
-        res.set("Content-Type", files[0].metadata?.mimetype || "image/jpeg")
-
-        const downloadStream = bucket.openDownloadStream(fileId)
-        downloadStream.on("error", () => res.status(500).json({ message: "Error streaming file" }))
-        downloadStream.pipe(res)
-    } catch (error) {
-        console.log("Error fetching profile pic:", error)
-        res.status(500).json({ message: "Failed to fetch profile picture" })
-    }
-})
-// delete profile pic
-router.delete("/profile-pic", authMiddleware(["jobseeker"]), async (req, res) => {
-    try {
-        const user = await Jobseeker.findById(req.user.id)
-        if (!user || !user.profilePicId)
-            return res.status(404).json({ message: "No profile picture found" })
-
-        await deleteFromGridFS(user.profilePicId)
-        user.profilePicId = null
-        await user.save()
-
-        res.status(200).json({ message: "Profile picture deleted successfully" })
-    } catch (error) {
-        console.log("Error deleting profile pic:", error)
-        res.status(500).json({ message: "Failed to delete profile picture" })
-    }
-})
+    })
 // update resume
 router.post(
     "/upload-resume",
     authMiddleware(["jobseeker"]),
-    (req, res, next) => {
-        uploadResume.single("resume")(req, res, (err) => {
-            if (err) return res.status(400).json({ message: err.message })
-            next()
-        })
-    },
+    upload.single("resume"),
     async (req, res) => {
-        try {
-            if (!req.file) return res.status(400).json({ message: "No file uploaded" })
 
-            const user = await Jobseeker.findById(req.user.id)
-            if (!user) return res.status(404).json({ message: "JobSeeker not found" })
+        const user =
+            await Jobseeker.findById(req.user.id)
 
-            // Delete old resume from GridFS if exists
-            if (user.resumeId) await deleteFromGridFS(user.resumeId)
-
-            user.resumeId = req.file.id
-            user.resumeFilename = req.file.originalname
-            await user.save()
-
-            res.status(200).json({
-                message: "Resume uploaded successfully",
-                filename: req.file.originalname,
-            })
-        } catch (error) {
-            console.log("Error uploading resume:", error)
-            res.status(500).json({ message: "Failed to upload resume" })
+        if (user.resumeId) {
+            await getBucket()
+                .delete(user.resumeId)
         }
-    }
-)
-// see resume
-router.get("/resume", authMiddleware(["jobseeker"]), async (req, res) => {
-    try {
-        const user = await Jobseeker.findById(req.user.id).select("resumeId resumeFilename")
-        if (!user || !user.resumeId)
-            return res.status(404).json({ message: "No resume found" })
 
-        const bucket = getGfsBucket()
-        const fileId = new mongoose.Types.ObjectId(user.resumeId)
+        const fileId =
+            await uploadToGridFS(
+                req.file,
+                "resume",
+                req.user.id
+            )
 
-        const files = await bucket.find({ _id: fileId }).toArray()
-        if (!files.length)
-            return res.status(404).json({ message: "File not found in storage" })
+        user.resumeId = fileId
+        user.resumeFilename = req.file.originalname
 
-        res.set("Content-Type", "application/pdf")
-        res.set("Content-Disposition", `inline; filename="${user.resumeFilename || "resume.pdf"}"`)
-
-        const downloadStream = bucket.openDownloadStream(fileId)
-        downloadStream.on("error", () => res.status(500).json({ message: "Error streaming file" }))
-        downloadStream.pipe(res)
-    } catch (error) {
-        console.log("Error fetching resume:", error)
-        res.status(500).json({ message: "Failed to fetch resume" })
-    }
-})
-//to delete resume
-router.delete("/resume", authMiddleware(["jobseeker"]), async (req, res) => {
-    try {
-        const user = await Jobseeker.findById(req.user.id)
-        if (!user) return res.status(404).json({ message: "JobSeeker not found" })
-
-        if (!user.resumeId)
-            return res.status(404).json({ message: "No resume to delete" })
-
-        await deleteFromGridFS(user.resumeId)
-        user.resumeId = null
-        user.resumeFilename = null
         await user.save()
 
-        res.status(200).json({ message: "Resume deleted successfully" })
-    } catch (error) {
-        console.log("Error deleting resume:", error)
-        res.status(500).json({ message: "Failed to delete resume" })
-    }
-})
+        res.json({ message: "Resume uploaded" })
+    })
+// see resume
+router.get(
+    "/resume",
+    authMiddleware(["jobseeker"]),
+    async (req, res) => {
+        try {
+
+            const user =
+                await Jobseeker
+                    .findById(req.user.id)
+                    .select("resumeId resumeFilename")
+
+            if (!user || !user.resumeId)
+                return res.status(404)
+                    .json({ message: "No resume" })
+
+            const bucket = getBucket()
+
+            const fileId =
+                new mongoose.Types.ObjectId(
+                    user.resumeId
+                )
+
+            res.set(
+                "Content-Type",
+                "application/pdf"
+            )
+
+            res.set(
+                "Content-Disposition",
+                `inline; filename="${user.resumeFilename}"`
+            )
+
+            bucket
+                .openDownloadStream(fileId)
+                .pipe(res)
+
+        } catch (err) {
+            console.log(err)
+            res.status(500)
+                .json({ message: "Fetch failed" })
+        }
+    })
+//to delete resume
+router.delete(
+    "/resume",
+    authMiddleware(["jobseeker"]),
+    async (req, res) => {
+        try {
+
+            const user =
+                await Jobseeker.findById(req.user.id)
+
+            if (!user.resumeId)
+                return res.status(404)
+                    .json({ message: "No resume" })
+
+            await getBucket()
+                .delete(
+                    new mongoose.Types.ObjectId(
+                        user.resumeId
+                    )
+                )
+
+            user.resumeId = null
+            user.resumeFilename = null
+
+            await user.save()
+
+            res.json({
+                message: "Resume deleted"
+            })
+
+        } catch (err) {
+            console.log(err)
+            res.status(500)
+                .json({ message: "Delete failed" })
+        }
+    })
 module.exports = router
