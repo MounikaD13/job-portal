@@ -1,8 +1,6 @@
 const mongoose = require("mongoose")
 const { GridFSBucket } = require("mongodb")
-
 let bucket
-
 const initGridFS = () => {
     bucket = new GridFSBucket(
         mongoose.connection.db,
