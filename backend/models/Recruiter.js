@@ -1,5 +1,4 @@
 const mongoose = require("mongoose")
-
 const recruiterSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -10,8 +9,7 @@ const recruiterSchema = new mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        lowercase: true,
-        trim: true
+        lowercase: true
     },
     password: {
         type: String,
@@ -32,14 +30,30 @@ const recruiterSchema = new mongoose.Schema({
         required: true,
         trim: true
     },
-    resetOtp:String,
-    resetOtpExpire:Date,
-    verificationOtp: {
+    companyWebsite: String,
+    industry: String,
+    companySize: String,
+    aboutCompany: String,
+    country: String,
+    state: String,
+    city: String,
+    linkedin: {
         type: String
     },
-    otpExpires: {
-        type: Date
+    // GridFS File IDs
+
+    profilePicId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
     },
+    companyLogoId: {
+        type: mongoose.Schema.Types.ObjectId,
+        default: null
+    },
+    resetOtp: String,
+    resetOtpExpire: Date,
+    verificationOtp: String,
+    otpExpires: Date,
     isVerified: {
         type: Boolean,
         default: false

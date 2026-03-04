@@ -79,7 +79,6 @@ let uploadResume
 const initGridFS = () => {
     const db = mongoose.connection.db
     gfsBucket = new GridFSBucket(db, { bucketName: "uploads" })
-
     uploadProfilePic = multer({
         storage: createStorage("profilePic"),
         fileFilter: imageFilter,
@@ -94,7 +93,6 @@ const initGridFS = () => {
 
     console.log("GridFS bucket initialized")
 }
-
 const getGfsBucket = () => {
     if (!gfsBucket) throw new Error("GridFSBucket not initialized")
     return gfsBucket

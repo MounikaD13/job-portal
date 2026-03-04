@@ -23,17 +23,13 @@ router.put("/profile", authMiddleware(["jobseeker"]), async (req, res) => {
     try {
         const user = await Jobseeker.findById(req.user.id)
         if (!user) return res.status(404).json({ message: "JobSeeker not found" })
-
         const { name, mobileNumber, address, skills, experience } = req.body
-
         if (name !== undefined) user.name = name
         if (mobileNumber !== undefined) user.mobileNumber = mobileNumber
         if (address !== undefined) user.address = address
         if (skills !== undefined) user.skills = skills
         if (experience !== undefined) user.experience = experience
-
         await user.save()
-
         res.json({ message: "Profile updated successfully" })
     } catch (err) {
         console.log(err)

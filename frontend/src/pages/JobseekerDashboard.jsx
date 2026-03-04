@@ -264,7 +264,7 @@ export default function JobSeekerProfile() {
                 onClick={deleteProfilePic}
                 className="absolute -bottom-0 -left-1 w-5 h-5 px-1 py-1 bg-red-600 text-white text-xs rounded-full items-center justify-center "
               >
-                <Trash size={10} />
+               <Trash  size={10}/>
               </button>
             )}
             <input ref={picRef} type="file" accept="image/jpeg,image/png" className="hidden" onChange={uploadPic} />
