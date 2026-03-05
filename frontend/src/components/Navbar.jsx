@@ -73,8 +73,8 @@ export default function Navbar() {
     ]
     : role === 'recruiter'
       ? [
-        { to: '/recruiter/create-jobs', label: 'Post a Job' },
-        { to: '/recruiter/applied-jobs', label: 'Post a Job' },
+        { to: '/recruiter/create-jobs', label: 'Add Job' },
+        { to: '/recruiter/applied-jobs', label: 'Applicants' },
       ]
       : []
 

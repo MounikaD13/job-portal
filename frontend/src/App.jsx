@@ -8,6 +8,7 @@ import VerifyReset from "./components/VerifyReset"
 import { Toaster } from "react-hot-toast"
 import ProtectedRoute from "./components/ProctedRoute"
 import JobSeekerDashboard from "./pages/JobseekerDashboard"
+import RecruiterDashboard from "./pages/RecruiterDashboard"
 import Navbar from './components/Navbar'
 
 function App() {
@@ -33,7 +34,7 @@ function App() {
                 <Route path="/verify-reset-otp" element={<VerifyReset />} />
                 <Route element={<ProtectedRoute />}>
                     <Route path="/jobseeker/profile" element={<JobSeekerDashboard />} />
-                    {/* <Route path="/recruiter/dashboard" element={<RecruiterDashboard />} /> */}
+                    <Route path="/recruiter/profile" element={<RecruiterDashboard />} />
                 </Route>
                 {/* Admin only 
                 <Route element={<RoleRoute allowedRoles={["admin"]} />}>

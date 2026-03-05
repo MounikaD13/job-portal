@@ -18,7 +18,6 @@ router.put("/profile", authMiddleware(["recruiter"]), async (req, res) => {
         const {
             name,
             mobileNumber,
-            companyName,
             companyAddress,
             companyWebsite,
             industry,
@@ -31,7 +30,6 @@ router.put("/profile", authMiddleware(["recruiter"]), async (req, res) => {
         } = req.body
         if (name !== undefined) user.name = name
         if (mobileNumber!== undefined) user.mobileNumber= mobileNumber
-        if (companyName !== undefined) user.companyName = companyName
         if (companyAddress !== undefined) user.companyAddress = companyAddress
         if (companyWebsite !== undefined) user.companyWebsite = companyWebsite
         if (industry !== undefined) user.industry = industry
@@ -110,7 +108,6 @@ router.post(
         }
     }
 )
-
 
 // GET PROFILE PIC
 router.get(
