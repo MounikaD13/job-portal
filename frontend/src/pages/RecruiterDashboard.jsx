@@ -162,7 +162,10 @@ export default function RecruiterProfile() {
       setActiveSection(id)
     }
   }
-
+  const showValue = (value) => {
+    if (!value || value.trim() === "") return "-"
+    return value;
+  }
   if (loading) return (
     <div className="flex items-center justify-center h-screen bg-stone-100">
       <div className="w-9 h-9 rounded-full border-2 border-gray-200 border-t-green-800 animate-spin" />
@@ -172,12 +175,13 @@ export default function RecruiterProfile() {
     <div className="flex items-center justify-center h-screen bg-stone-100">
       <p className="text-gray-400">Could not load profile.</p>
     </div>
+
   )
   return (
     <div className="bg-stone-100 min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-8 pb-20">
         {/* HERO CARD */}
-        <div className="relative overflow-hidden bg-green-900 rounded-2xl p-8 flex items-center gap-7 mb-6 flex-col sm:flex-row">
+        <div className="relative overflow-hidden bg-gradient-to-br from-green-900 via-cyan-900 to-green-700 rounded-2xl p-8 flex items-center gap-7 mb-6 flex-col sm:flex-row">
           <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
           <div className="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-white/[0.03] pointer-events-none" />
 
@@ -317,7 +321,7 @@ export default function RecruiterProfile() {
                         className={inputCls}
                         value={form.linkedin}
                         onChange={(e) =>
-                          setForm({ ...form,linkedin: e.target.value })
+                          setForm({ ...form, linkedin: e.target.value })
                         }
                       />
                     </div>
@@ -337,24 +341,30 @@ export default function RecruiterProfile() {
                   </div>
                 </>
               ) : (
+                <>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Email</label>
+                    <p className="mb-2">{profile.email}</p>
+                </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className={labelCls}>Name</label>
                     <p>{profile.name}</p>
                   </div>
-                  <div>
+                  {/* <div>
                     <label className={labelCls}>Email</label>
                     <p>{profile.email}</p>
-                  </div>
+                  </div> */}
                   <div>
                     <label className={labelCls}>Mobile</label>
-                    <p>{profile.mobileNumber}</p>
+                    <p>{showValue(profile.mobileNumber)}</p>
                   </div>
                   <div>
                     <label className={labelCls}>linkedin</label>
-                    <p>{profile.linkedin}</p>
+                    <p>{showValue(profile.linkedin)}</p>
                   </div>
                 </div>
+                </>
               )}
             </SectionCard>
 
@@ -417,21 +427,21 @@ export default function RecruiterProfile() {
                   </div>
                   <div>
                     <label className={labelCls}>Website</label>
-                    <p>{profile.companyWebsite}</p>
+                    <p>{showValue(profile.companyWebsite)}</p>
                   </div>
                   <div>
                     <label className={labelCls}>Industry</label>
-                    <p>{profile.industry}</p>
+                    <p>{showValue(profile.industry)}</p>
                   </div>
 
                   <div>
                     <label className={labelCls}>Company Size</label>
-                    <p>{profile.companySize}</p>
+                    <p>{showValue(profile.companySize)}</p>
                   </div>
 
                   <div className="sm:col-span-2">
                     <label className={labelCls}>About Company</label>
-                    <p>{profile.aboutCompany}</p>
+                    <p>{showValue(profile.aboutCompany)}</p>
                   </div>
                 </div>
               )}
@@ -477,6 +487,7 @@ export default function RecruiterProfile() {
                       <input
                         className={inputCls}
                         value={form.city || ""}
+                        placeholder="city name ex:Mumbai"
                         onChange={(e) => setForm({ ...form, city: e.target.value })}
                       />
                     </div>
@@ -512,17 +523,17 @@ export default function RecruiterProfile() {
 
                       <div>
                         <label className={labelCls}>Country</label>
-                        <p className="text-sm text-gray-900">{profile.country}</p>
+                        <p className="text-sm text-gray-900">{showValue(profile.country)}</p>
                       </div>
 
                       <div>
                         <label className={labelCls}>State</label>
-                        <p className="text-sm text-gray-900">{profile.state}</p>
+                        <p className="text-sm text-gray-900">{showValue(profile.state)}</p>
                       </div>
 
                       <div>
                         <label className={labelCls}>City</label>
-                        <p className="text-sm text-gray-900">{profile.city}</p>
+                        <p className="text-sm text-gray-900">{showValue(profile.city)}</p>
                       </div>
 
                     </div>

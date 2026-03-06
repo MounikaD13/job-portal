@@ -54,19 +54,19 @@ export default function Login() {
             inset: 0,
             pointerEvents: "none",
             background:
-              "radial-gradient(ellipse 70% 60% at 20% 70%, rgba(20,184,166,0.18) 0%, transparent 65%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(6,182,212,0.12) 0%, transparent 60%)",
+              "radial-gradient(ellipse 70% 60% at 20% 70%, rgba(20, 173, 184, 0.18) 30%, transparent 65%), radial-gradient(ellipse 60% 50% at 80% 20%, rgba(6, 212, 105, 0.12) 30%, transparent 60%)",
           }}
         />
 
         {/* MOBILE VIEW */}
-        <div className="block lg:hidden text-center z-10 py-[1.5rem]">
-          <p className="text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-cyan-400 mb-[0.8rem]">
+        <div className="block lg:hidden text-center z-10 py-[1rem]">
+          <p className="text-[0.7rem] font-semibold tracking-[0.14em] uppercase text-cyan-300 mb-[0.8rem]">
             Your career, elevated
           </p>
 
           <h1 className="text-[2rem] font-bold leading-tight">
             Find your next <br />
-            <span className="text-cyan-400">dream role</span>
+            <span className="text-cyan-300">dream role</span>
             <br />
             today.
           </h1>
@@ -77,7 +77,7 @@ export default function Login() {
 
           {/* center content */}
           <div>
-            <p className="text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-cyan-400 mb-[1rem]">
+            <p className="text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-green-300 mb-[1rem]">
               Your career, elevated
             </p>
 
@@ -90,7 +90,7 @@ export default function Login() {
               }}
             >
               Find your next <br />
-              <span className="text-cyan-400">dream role</span>
+              <span className="text-green-300">dream role</span>
               <br />
               today.
             </h1>

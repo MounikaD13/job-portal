@@ -262,7 +262,7 @@ export default function JobSeekerProfile() {
       <div className="max-w-6xl mx-auto px-4 py-8 pb-20">
 
         {/* Hero Card */}
-        <div className="relative overflow-hidden bg-green-900 rounded-2xl p-8 flex items-center gap-7 mb-6 flex-col sm:flex-row">
+        <div className="relative overflow-hidden bg-gradient-to-br from-green-900 via-cyan-900 to-green-700 rounded-2xl p-8 flex items-center gap-7 mb-6 flex-col sm:flex-row">
           <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full bg-white/5 pointer-events-none" />
           <div className="absolute bottom-0 left-1/3 w-40 h-40 rounded-full bg-white/[0.03] pointer-events-none" />
 

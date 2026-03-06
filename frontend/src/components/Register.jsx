@@ -305,7 +305,7 @@ export default function Register() {
         <div className="block lg:hidden text-center">
 
           <h1 className="text-[1.8rem] font-bold leading-tight">
-            Registration <span className="text-cyan-400">Progress</span>
+            Registration <span className="text-green-300">Progress</span>
           </h1>
 
           <p className="mt-2 text-[0.9rem] text-gray-400">
@@ -356,7 +356,7 @@ export default function Register() {
 
           <h1 className="text-[2.6rem] font-bold leading-[3rem]">
             Registration <br />
-            <span className="text-cyan-400">Progress</span>
+            <span className="text-green-300">Progress</span>
           </h1>
 
           <p className="mt-[1.2rem] text-[1.05rem] text-gray-400">

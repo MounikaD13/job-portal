@@ -10,6 +10,7 @@ import ProtectedRoute from "./components/ProctedRoute"
 import JobSeekerDashboard from "./pages/JobseekerDashboard"
 import RecruiterDashboard from "./pages/RecruiterDashboard"
 import Navbar from './components/Navbar'
+import AddJob from "./pages/AddJob"
 
 function App() {
     return (
@@ -24,7 +25,7 @@ function App() {
                     },
                 }}
             />
-            <Navbar/>
+            <Navbar />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path='/*' element={<NotFound />} />
@@ -35,6 +36,7 @@ function App() {
                 <Route element={<ProtectedRoute />}>
                     <Route path="/jobseeker/profile" element={<JobSeekerDashboard />} />
                     <Route path="/recruiter/profile" element={<RecruiterDashboard />} />
+                    <Route path="/recruiter/create-jobs" element={<AddJob />} />
                 </Route>
                 {/* Admin only 
                 <Route element={<RoleRoute allowedRoles={["admin"]} />}>

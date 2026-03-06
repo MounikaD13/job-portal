@@ -50,7 +50,7 @@ export default function Navbar() {
 
   const linkClass = (path) =>
     `relative px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200 ${isActive(path)
-      ? 'text-indigo-600 bg-indigo-50'
+      ? 'text-cyan-700 bg-indigo-100 '
       : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-100'
     }`
   // Close dropdown when clicking outside
@@ -136,7 +136,7 @@ export default function Navbar() {
                 <Link to="/login" className="px-4 py-1.5 font-medium text-slate-600 hover:text-[#0f172a] hover:bg-slate-100 rounded-md transition-all">
                   Log in
                 </Link>
-                <Link to="/register" className="px-4 py-1.5 font-semibold text-white bg-[#0f172a] hover:text-cyan-400 rounded-md shadow-sm transition-all">
+                <Link to="/register" className="px-4 py-1.5 font-semibold text-white bg-[#0f172a] hover:text-cyan-500 rounded-md shadow-sm transition-all">
                   Sign up
                 </Link>
               </>

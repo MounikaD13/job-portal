@@ -31,7 +31,7 @@ const jobSchema = new mongoose.Schema({
     required: true
   },
   skillsRequired: [String],
-  postedBy: {
+  recruiterId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Recruiter",
     required: true
@@ -47,6 +47,6 @@ const jobSchema = new mongoose.Schema({
 })
 
 module.exports = mongoose.model("Job", jobSchema)
-/*postedBy → recruiterId
+/*recruiterId → recruiterId
 This helps to:
 show recruiter jobs , show recruiter dashboard ,restrict editing only to job owner */
