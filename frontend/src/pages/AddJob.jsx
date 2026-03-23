@@ -4,7 +4,7 @@ import API from '../api/apiCheck'
 import toast from 'react-hot-toast'
 import {
     Briefcase, Building2, MapPin, Clock, TrendingUp, ChevronDown,
-    DollarSign, Wrench, FileText, ArrowLeft, Send
+    DollarSign, Wrench, FileText, ArrowLeft, Send, Image
 } from 'lucide-react'
 
 const FieldWrapper = ({ label, required, hint, children }) => (
@@ -18,7 +18,6 @@ const FieldWrapper = ({ label, required, hint, children }) => (
 )
 
 const inputCls = "w-full pl-10 pr-4 py-2.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-xl outline-none transition-all duration-150 focus:border-green-700 focus:ring-2 focus:ring-green-700/10 placeholder:text-gray-300"
-
 const selectCls = "w-full pl-10 pr-4 py-2.5 text-sm text-gray-900 bg-white border border-gray-200 rounded-xl outline-none transition-all duration-150 focus:border-green-700 focus:ring-2 focus:ring-green-700/10 cursor-pointer appearance-none"
 
 const SectionHeading = ({ label }) => (
@@ -41,6 +40,7 @@ export default function AddJob() {
         title: '',
         description: '',
         companyName: '',
+        companyLogoId: '',
         location: '',
         jobType: 'Full-Time',
         salaryMin: '',
@@ -48,10 +48,40 @@ export default function AddJob() {
         experienceRequired: '',
         skillsRequired: '',
     })
+    const [logoPreview, setLogoPreview] = useState(null)
+    const [logoUploading, setLogoUploading] = useState(false)
 
     const handleChange = (e) => {
         const { name, value } = e.target
         setFormData((prev) => ({ ...prev, [name]: value }))
+    }
+
+    const handleLogoChange = async (e) => {
+        const file = e.target.files[0]
+        if (!file) return
+
+        // Local preview
+        const reader = new FileReader()
+        reader.onloadend = () => setLogoPreview(reader.result)
+        reader.readAsDataURL(file)
+
+        // Upload to backend
+        setLogoUploading(true)
+        try {
+            const uploadData = new FormData()
+            uploadData.append('companyLogo', file)
+            const response = await API.post('/jobs/upload-logo', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            })
+            setFormData(prev => ({ ...prev, companyLogoId: response.data.fileId }))
+            toast.success('Logo uploaded successfully')
+        } catch (err) {
+            console.error('Logo upload error:', err)
+            toast.error('Failed to upload logo')
+            setLogoPreview(null)
+        } finally {
+            setLogoUploading(false)
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -66,6 +96,7 @@ export default function AddJob() {
                 title: formData.title,
                 description: formData.description,
                 companyName: formData.companyName,
+                companyLogoId: formData.companyLogoId || null,
                 location: formData.location,
                 jobType: formData.jobType,
                 experienceRequired: Number(formData.experienceRequired),
@@ -79,7 +110,7 @@ export default function AddJob() {
             }
             const response = await API.post('/jobs', payload)
             toast.success(response.data.message || 'Job added successfully!')
-            navigate('/recruiter/profile')
+            navigate('/recruiter/my-jobs')
         } catch (err) {
             console.error('Add job error:', err)
             toast.error(err.response?.data?.message || 'Failed to add job. Please try again.')
@@ -158,6 +189,35 @@ export default function AddJob() {
                                             placeholder="e.g. Acme Corp"
                                             className={inputCls}
                                         />
+                                    </div>
+                                </FieldWrapper>
+
+                                {/* Company Logo Upload */}
+                                <FieldWrapper label="Company Logo" hint="Optional — upload a PNG or JPG logo">
+                                    <div className="relative flex items-center gap-3">
+                                        <div className="flex-1 relative">
+                                            <IconWrap><Image size={14} /></IconWrap>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                onChange={handleLogoChange}
+                                                className={`${inputCls} pt-[7px]`} // Adjust padding for file input
+                                                disabled={logoUploading}
+                                            />
+                                            {logoUploading && (
+                                                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                                                    <div className="w-4 h-4 border-2 border-green-200 border-t-green-600 rounded-full animate-spin"></div>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {/* Live preview */}
+                                        <div className="w-10 h-10 rounded-lg border border-gray-200 bg-gray-50 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                                            {logoPreview ? (
+                                                <img src={logoPreview} alt="logo preview" className="w-full h-full object-contain" />
+                                            ) : (
+                                                <Building2 size={18} className="text-gray-300" />
+                                            )}
+                                        </div>
                                     </div>
                                 </FieldWrapper>
 
@@ -315,7 +375,7 @@ export default function AddJob() {
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white bg-green-800 hover:bg-green-900 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-2.5 rounded-xl text-sm font-semibold text-white bg-cyan-800 hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 {loading ? (
                                     <>

@@ -11,7 +11,11 @@ import JobSeekerDashboard from "./pages/JobseekerDashboard"
 import RecruiterDashboard from "./pages/RecruiterDashboard"
 import Navbar from './components/Navbar'
 import AddJob from "./pages/AddJob"
-
+import MyJobs from "./pages/MyJobs"
+import Jobs from "./pages/Jobs"
+import JobDetails from "./pages/JobDetails"
+import MyApplications from "./pages/MyApplications"
+import ViewApplicants from "./pages/ViewApplicants"
 function App() {
     return (
         <div>
@@ -34,9 +38,15 @@ function App() {
                 <Route path="/forgot-password" element={<ForgotPassword />} />
                 <Route path="/verify-reset-otp" element={<VerifyReset />} />
                 <Route element={<ProtectedRoute />}>
+                    <Route path='/jobs' element={<Jobs />} />
+                    <Route path='/job/:id' element={<JobDetails />} />
                     <Route path="/jobseeker/profile" element={<JobSeekerDashboard />} />
+                    <Route path="/jobseeker/applied-jobs" element={<MyApplications />} />
+
                     <Route path="/recruiter/profile" element={<RecruiterDashboard />} />
                     <Route path="/recruiter/create-jobs" element={<AddJob />} />
+                    <Route path="/recruiter/my-jobs" element={<MyJobs />} />
+                    <Route path="/recruiter/job/:jobId/applicants" element={<ViewApplicants />} />
                 </Route>
                 {/* Admin only 
                 <Route element={<RoleRoute allowedRoles={["admin"]} />}>

@@ -1,13 +1,57 @@
 const express = require("express")
 const router = express.Router()
+const mongoose = require("mongoose")
 const Job = require("../models/Jobs")
 const authMiddleware = require("../middleware/authMiddleware")
+const upload = require("../middleware/upload")
+const { getBucket, uploadToGridFS } = require("../utils/gridFsUpload")
+
+// GET /api/jobs
+// Fetch all jobs (All logged-in users)
+router.get("/", authMiddleware([]), async (req, res) => {
+    try {
+        const jobs = await Job.find().sort({ createdAt: -1 })
+        res.status(200).json({ jobs })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Failed to fetch jobs" })
+    }
+})
+
+// POST /api/jobs/upload-logo
+// Upload a company logo for a job (Recruiter only) — returns fileId
+router.post("/upload-logo", authMiddleware(["recruiter"]), upload.single("companyLogo"), async (req, res) => {
+    try {
+        if (!req.file) return res.status(400).json({ message: "No file uploaded" })
+        const fileId = await uploadToGridFS(req.file, "jobLogo", req.user.id)
+        res.status(200).json({ fileId })
+    } catch (err) {
+        console.error("Logo upload failed:", err)
+        res.status(500).json({ message: "Logo upload failed" })
+    }
+})
+
+// GET /api/jobs/logo/:fileId
+// Serve a company logo image by its GridFS file ID (public)
+router.get("/logo/:fileId", async (req, res) => {
+    try {
+        const fileId = new mongoose.Types.ObjectId(req.params.fileId)
+        const bucket = getBucket()
+        const files = await bucket.find({ _id: fileId }).toArray()
+        if (!files.length) return res.status(404).json({ message: "Logo not found" })
+        res.set("Content-Type", files[0].contentType || "image/png")
+        bucket.openDownloadStream(fileId).pipe(res)
+    } catch (err) {
+        console.error("Logo fetch failed:", err)
+        res.status(500).json({ message: "Failed to fetch logo" })
+    }
+})
 
 // POST /api/jobs
 // Add a new job (Recruiter only)
 router.post("/", authMiddleware(["recruiter"]), async (req, res) => {
     try {
-        const { title, description, companyName, location, jobType, salary, experienceRequired, skillsRequired } = req.body
+        const { title, description, companyName, location, jobType, salary, experienceRequired, skillsRequired, companyLogoId } = req.body
         if (!title || !description || !companyName || !location || !jobType || experienceRequired === undefined) {
             return res.status(400).json({ message: "Please provide all required fields" })
         }
@@ -20,6 +64,7 @@ router.post("/", authMiddleware(["recruiter"]), async (req, res) => {
             salary,
             experienceRequired,
             skillsRequired,
+            companyLogoId: companyLogoId || null,
             recruiterId: req.user.id
         })
         await newJob.save()
@@ -87,6 +132,21 @@ router.delete("/:id", authMiddleware(["recruiter"]), async (req, res) => {
     } catch (err) {
         console.error(err)
         res.status(500).json({ message: "Failed to delete job" })
+    }
+})
+
+// GET /api/jobs/:id
+// Fetch a single job by ID (All logged-in users)
+router.get("/:id", authMiddleware([]), async (req, res) => {
+    try {
+        const job = await Job.findById(req.params.id)
+        if (!job) {
+            return res.status(404).json({ message: "Job not found" })
+        }
+        res.status(200).json({ job })
+    } catch (err) {
+        console.error(err)
+        res.status(500).json({ message: "Failed to fetch job" })
     }
 })
 

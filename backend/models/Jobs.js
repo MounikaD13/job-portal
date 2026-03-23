@@ -31,6 +31,10 @@ const jobSchema = new mongoose.Schema({
     required: true
   },
   skillsRequired: [String],
+  companyLogoId: {
+    type: mongoose.Schema.Types.ObjectId,
+    default: null
+  },
   recruiterId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Recruiter",

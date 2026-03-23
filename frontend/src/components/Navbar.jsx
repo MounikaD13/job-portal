@@ -68,13 +68,15 @@ export default function Navbar() {
 
   const navLinks = role === 'jobseeker'
     ? [
-      { to: '/jobseeker/jobs', label: 'Browse Jobs' },
+      { to: '/jobs', label: 'Browse Jobs' },
       { to: '/jobseeker/applied-jobs', label: 'Applied Jobs' },
     ]
     : role === 'recruiter'
       ? [
         { to: '/recruiter/create-jobs', label: 'Add Job' },
-        { to: '/recruiter/applied-jobs', label: 'Applicants' },
+        { to: '/recruiter/my-jobs', label: 'Jobs Posted' },
+        { to: '/recruiter/applicants', label: 'Applicants' },
+        // { to: '/jobs', label: 'Browse Jobs' },
       ]
       : []
 
@@ -153,7 +155,7 @@ export default function Navbar() {
                     onClick={() => setDropdownOpen(!dropdownOpen)}
                     className="w-8 h-8 rounded-full bg-cyan-100 border-2 border-indigo-200 flex items-center justify-center text-sm font-bold text-indigo-600 hover:border-indigo-400 hover:bg-indigo-200 transition-all focus:outline-none"
                   >
-                    {user?.name?.[0]?.toUpperCase() ?? user?.email?.[0]?.toUpperCase() ?? 'U'}
+                    {user?.email?.[0]?.toUpperCase() ?? user?.name?.[0]?.toUpperCase() ?? 'U'}
                   </button>
 
                   {/* Dropdown Menu */}
