@@ -180,10 +180,10 @@ export default function MyJobs() {
                     {/* Title row */}
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                         <div>
-                            <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                            <h1 className="text-lg font-bold text-slate-900 tracking-tight leading-tight">
                                 My Posted Jobs
                             </h1>
-                            <p className="text-sm text-slate-400 mt-1">
+                            <p className="text-xs text-slate-400 mt-1">
                                 {jobs.length} listing{jobs.length !== 1 ? 's' : ''} · Manage your open roles
                             </p>
                         </div>
@@ -196,7 +196,7 @@ export default function MyJobs() {
                                 <CircleDot size={17} className="text-emerald-500" />
                                 <span className="text-[0.65rem] font-bold uppercase tracking-widest text-slate-400">Active</span>
                             </div>
-                            <span className="text-3xl font-extrabold text-slate-900 leading-none">{stats.active}</span>
+                            <span className="text-3xl font-bold text-slate-900 leading-none">{stats.active}</span>
                             <span className="text-xs text-slate-400">live listings</span>
                         </div>
 
@@ -206,7 +206,7 @@ export default function MyJobs() {
                                 <Clock3 size={14} className="text-amber-400" />
                                 <span className="text-[0.65rem] font-bold uppercase tracking-widest text-slate-400">Draft</span>
                             </div>
-                            <span className="text-3xl font-extrabold text-slate-900 leading-none">{stats.draft}</span>
+                            <span className="text-3xl font-bold text-slate-900 leading-none">{stats.draft}</span>
                             <span className="text-xs text-slate-400">unpublished</span>
                         </div> */}
 
@@ -216,7 +216,7 @@ export default function MyJobs() {
                                 <Users size={14} className="text-sky-500" />
                                 <span className="text-[0.65rem] font-bold uppercase tracking-widest text-slate-400">Applications</span>
                             </div>
-                            <span className="text-3xl font-extrabold text-slate-900 leading-none">{stats.totalApps}</span>
+                            <span className="text-3xl font-bold text-slate-900 leading-none">{stats.totalApps}</span>
                             <span className="text-xs text-slate-400">total received</span>
                         </div> */}
 
@@ -226,7 +226,7 @@ export default function MyJobs() {
                                 <CalendarDays size={17} className="text-violet-400" />
                                 <span className="text-[0.65rem] font-bold uppercase tracking-widest text-slate-400">Last Posted</span>
                             </div>
-                            <span className="text-lg font-extrabold text-slate-900 leading-none mt-1">{stats.latest}</span>
+                            <span className="text-lg font-bold text-slate-900 leading-none mt-1">{stats.latest}</span>
                             <span className="text-xs text-slate-400">most recent</span>
                         </div>
                     </div>
@@ -268,7 +268,7 @@ export default function MyJobs() {
                         </button>
                     </div>
                 ) : (
-                    <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm mb-10">
+                    <div className="bg-white border border-slate-200 rounded-2xl overflow-auto shadow-sm mb-10 max-h-[400px]">
 
                         {/* Column headers — desktop */}
                         <div className="hidden sm:grid sm:grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 px-6 py-3 bg-slate-50 border-b border-slate-200">
@@ -297,7 +297,7 @@ export default function MyJobs() {
 
                                         {/* ── Main row ── */}
                                         <div
-                                            className={`grid grid-cols-1 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3 sm:gap-4 px-5 sm:px-6 py-4 items-center cursor-pointer select-none transition-colors duration-150 ${isExpanded ? 'bg-slate-50/80' : 'hover:bg-slate-50/60'}`}
+                                            className={`grid grid-cols-1 sm:grid-cols-[2fr_1fr_1fr_1fr_auto] gap-3 sm:gap-4 px-5 sm:px-6 py-7 items-center cursor-pointer select-none transition-colors duration-150 ${isExpanded ? 'bg-slate-50/80' : 'hover:bg-slate-50/60'}`}
                                             onClick={() => toggleExpand(job._id)}
                                         >
                                             {/* Role */}

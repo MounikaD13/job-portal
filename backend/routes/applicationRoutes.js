@@ -53,6 +53,7 @@ router.post("/apply/:jobId", authMiddleware(["jobseeker"]), upload.single("resum
         });
 
         await newApplication.save();
+        await Job.findByIdAndUpdate(jobId, { $inc: { applicantsCount: 1 } });
         res.status(201).json({ message: "Application submitted successfully", application: newApplication });
     } catch (err) {
         console.error("Application failed:", err);
@@ -78,6 +79,9 @@ router.get("/my-applications", authMiddleware(["jobseeker"]), async (req, res) =
 // Get all applications for a specific job (Recruiter only)
 router.get("/job/:jobId", authMiddleware(["recruiter"]), async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.jobId)) {
+            return res.status(400).json({ message: "Invalid Job ID" });
+        }
         const applications = await Application.find({ jobId: req.params.jobId, recruiterId: req.user.id })
             .populate("jobSeekerId", "name email") // Assuming User model has name and email
             .sort({ createdAt: -1 });

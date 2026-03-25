@@ -295,17 +295,16 @@ export default function Register() {
   return (
     <div className="min-h-screen w-full flex flex-col lg:flex-row">
 
-      {/* LEFT SIDE - Branding */}
       {/* LEFT SIDE - Registration Progress */}
       <div className="lg:w-[50%] w-full 
                 bg-[#0f172a] text-white 
-                px-[6%] py-[2rem] lg:py-[0.8rem]">
+                px-[6%] py-[1rem] lg:py-[0.8rem]">
 
         {/* MOBILE VIEW */}
         <div className="block lg:hidden text-center">
 
-          <h1 className="text-[1.8rem] font-bold leading-tight">
-            Registration <span className="text-green-300">Progress</span>
+          <h1 className="text-[1.2rem] font-bold leading-tight">
+            Registration <span className="text-cyan-400">Progress</span>
           </h1>
 
           <p className="mt-2 text-[0.9rem] text-gray-400">
@@ -354,9 +353,9 @@ export default function Register() {
         {/* DESKTOP VIEW (your original detailed version) */}
         <div className="hidden lg:flex flex-col justify-center h-full px-[8%]">
 
-          <h1 className="text-[2.6rem] font-bold leading-[3rem]">
+          <h1 className="text-[2rem] font-bold leading-[3rem]">
             Registration <br />
-            <span className="text-green-300">Progress</span>
+            <span className="text-cyan-400">Progress</span>
           </h1>
 
           <p className="mt-[1.2rem] text-[1.05rem] text-gray-400">
@@ -430,9 +429,9 @@ export default function Register() {
         <div className="w-[100%] sm:w-[95%] md:w-[75%] lg:w-[90%] 
                       bg-white rounded-[1.2rem] 
                       shadow-[0_1rem_2rem_rgba(0,0,0,0.08)] 
-                      p-[3rem]">
+                      p-[2rem]">
 
-          <h2 className="text-[1.8rem] font-bold text-[#0f172a]">
+          <h2 className="text-[1.2rem] font-bold text-[#0f172a]">
             Create Account
           </h2>
 
@@ -443,8 +442,8 @@ export default function Register() {
           {message.text && (
             <div
               className={`mb-[1.5rem] p-[1rem] rounded-[0.6rem] text-[0.95rem] font-medium ${message.type === "success"
-                  ? "bg-green-50 text-green-600 border border-green-200"
-                  : "bg-red-50 text-red-600 border border-red-200"
+                ? "bg-green-50 text-green-600 border border-green-200"
+                : "bg-red-50 text-red-600 border border-red-200"
                 }`}
             >
               {message.text}
@@ -462,8 +461,8 @@ export default function Register() {
                     key={r}
                     onClick={() => setRole(r)}
                     className={`w-[50%] py-[0.8rem] rounded-[0.5rem] text-[0.95rem] font-medium transition ${role === r
-                        ? "bg-white shadow text-[#0f172a]"
-                        : "text-gray-500"
+                      ? "bg-white shadow text-[#0f172a]"
+                      : "text-gray-500"
                       }`}
                   >
                     {r === "jobseeker" ? "Job Seeker" : "Recruiter"}
@@ -485,8 +484,8 @@ export default function Register() {
                 onClick={handleSendOTP}
                 disabled={loading}
                 className="w-full py-[1rem] rounded-[0.6rem]
-                         bg-[#0f172a] text-white font-medium
-                         hover:bg-black transition"
+                         bg-cyan-500 text-white font-medium
+                         hover:bg-cyan-700 transition"
               >
                 {otpSent ? "Resend OTP" : "Send OTP"}
               </button>

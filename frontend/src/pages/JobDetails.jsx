@@ -75,35 +75,14 @@ export default function JobDetails() {
 
     return (
         <div className="min-h-screen bg-slate-50 pb-20">
-            {/* Top Navigation */}
-            <div className="bg-white border-b border-slate-200 sticky top-0 z-10">
-                <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
-                    <button
-                        onClick={() => navigate('/jobs')}
-                        className="flex items-center gap-2 text-sm font-bold text-slate-600 hover:text-emerald-600 transition-colors"
-                    >
-                        <ArrowLeft size={18} /> Back to Jobs
-                    </button>
-                    <div className="flex items-center gap-3">
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
-                            <Share2 size={18} />
-                        </button>
-                        <button className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-xl transition-all">
-                            <Bookmark size={18} />
-                        </button>
-                    </div>
-                </div>
-            </div>
-
             <div className="max-w-5xl mx-auto px-6 pt-10">
                 <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-
                     {/* Main Content */}
                     <div className="space-y-8">
                         {/* Header card */}
-                        <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
+                        <div className="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm">
                             <div className="flex flex-col sm:flex-row items-start gap-6">
-                                <div className="w-20 h-20 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
+                                <div className="w-10 h-10 rounded-2xl border border-slate-100 bg-slate-50 flex items-center justify-center overflow-hidden shrink-0 shadow-inner">
                                     {job.companyLogoId ? (
                                         <img
                                             src={`${import.meta.env.VITE_API_URL}/jobs/logo/${job.companyLogoId}`}
@@ -111,27 +90,26 @@ export default function JobDetails() {
                                             className="w-full h-full object-contain"
                                         />
                                     ) : (
-                                        <Building2 size={32} className="text-slate-300" />
+                                        <Building2 size={24} className="text-slate-300" />
                                     )}
                                 </div>
                                 <div className="flex-1">
                                     <div className="flex flex-wrap items-center gap-3 mb-2">
-                                        <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-[10px] font-extrabold uppercase tracking-wider rounded-full ring-1 ring-emerald-200">
+                                        <span className="px-3 py-1 bg-emerald-50 text-emerald-700 text-xs uppercase tracking-wider rounded-full ring-1 ring-emerald-200">
                                             {job.jobType}
                                         </span>
                                         <span className="text-sm text-slate-400 font-medium flex items-center gap-1.5">
                                             <Calendar size={14} /> Posted {new Date(job.createdAt).toLocaleDateString()}
                                         </span>
                                     </div>
-                                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight leading-tight mb-2">
+                                    <h1 className="text-xl font-bold text-slate-900 tracking-tight leading-tight mb-2">
                                         {job.title}
                                     </h1>
-                                    <div className="text-lg font-bold text-slate-600 flex items-center gap-2">
+                                    <div className="text-md font-bold text-slate-600 flex items-center gap-2">
                                         {job.companyName}
                                     </div>
                                 </div>
                             </div>
-
                             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10 pt-8 border-t border-slate-100">
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Location</p>
@@ -153,17 +131,21 @@ export default function JobDetails() {
                                 </div>
                                 <div className="space-y-1">
                                     <p className="text-[10px] font-bold uppercase tracking-widest text-slate-400">Salary</p>
-                                    <div className="flex items-center gap-1.5 text-sm font-bold text-emerald-600">
-                                        <DollarSign size={16} className="text-emerald-500" />
-                                        {job.salary?.min ? `₹${job.salary.min.toLocaleString()}` : 'Negotiable'}
-                                    </div>
+                                    <div className="flex items-center gap-1 text-sm font-bold text-emerald-600">
+                                        {job.salary?.min && job.salary?.max
+                                            ? `₹${job.salary.min.toLocaleString()}- ₹${job.salary.max.toLocaleString()}`
+                                            : job.salary?.min
+                                                ? `₹${job.salary.min.toLocaleString()}`
+                                                : job.salary?.max
+                                                    ? `₹${job.salary.max.toLocaleString()}`
+                                                    : 'Negotiable'}                                    </div>
                                 </div>
                             </div>
                         </div>
 
                         {/* Description */}
                         <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-                            <h2 className="text-xl font-extrabold text-slate-900 mb-6 flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                                 <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
                                 Job Description
                             </h2>
@@ -174,7 +156,7 @@ export default function JobDetails() {
 
                         {/* Skills */}
                         <div className="bg-white border border-slate-200 rounded-3xl p-8 shadow-sm">
-                            <h2 className="text-xl font-extrabold text-slate-900 mb-6 flex items-center gap-3">
+                            <h2 className="text-xl font-bold text-slate-900 mb-6 flex items-center gap-3">
                                 <span className="w-1.5 h-6 bg-emerald-500 rounded-full"></span>
                                 Key Skills Required
                             </h2>
@@ -191,7 +173,7 @@ export default function JobDetails() {
                     {/* Sidebar / Apply */}
                     <div className="space-y-6">
                         <div className="bg-slate-900 rounded-3xl p-8 shadow-xl shadow-slate-200 sticky top-24">
-                            <h3 className="text-white font-extrabold text-xl mb-2">Ready to apply?</h3>
+                            <h3 className="text-white font-bold text-xl mb-2">Ready to apply?</h3>
                             <p className="text-slate-400 text-sm mb-8 leading-relaxed">
                                 Submit your profile and start your journey with {job.companyName} today.
                             </p>
@@ -203,14 +185,14 @@ export default function JobDetails() {
                                 </div>
                             ) : !user ? (
                                 <button
-                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group"
+                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group"
                                     onClick={() => navigate('/login')}
                                 >
                                     Login to Apply
                                 </button>
                             ) : (
                                 <button
-                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group"
+                                    className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/20 transition-all flex items-center justify-center gap-2 group"
                                     onClick={() => setShowApplyModal(true)}
                                 >
                                     <Send size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
@@ -224,15 +206,15 @@ export default function JobDetails() {
                         </div>
 
                         {/* Company Info (Mocked for now as we don't have a separate company collection) */}
-                        <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-                            <h4 className="font-extrabold text-slate-900 mb-4 tracking-tight">About the company</h4>
+                        {/* <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+                            <h4 className="font-bold text-slate-900 mb-4 tracking-tight">About the company</h4>
                             <p className="text-sm text-slate-500 leading-relaxed mb-4">
                                 {job.companyName} is a leading organization in the industry, focused on innovation and excellence.
                             </p>
                             <button className="w-full py-2.5 text-xs font-bold text-slate-600 border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors">
                                 View Company Profile
                             </button>
-                        </div>
+                        </div> */}
                     </div>
 
                 </div>
@@ -246,7 +228,7 @@ export default function JobDetails() {
                     <div className="relative bg-white w-full max-w-lg rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-200">
                         <div className="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
                             <div>
-                                <h3 className="text-xl font-extrabold text-slate-900">Apply for Position</h3>
+                                <h3 className="text-xl font-bold text-slate-900">Apply for Position</h3>
                                 <p className="text-xs text-slate-500 font-medium mt-0.5">{job.title} at {job.companyName}</p>
                             </div>
                             <button
@@ -314,7 +296,7 @@ export default function JobDetails() {
                             <button
                                 type="submit"
                                 disabled={isApplying}
-                                className={`w-full py-4 rounded-2xl font-extrabold text-white shadow-lg transition-all flex items-center justify-center gap-2 ${isApplying ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20'
+                                className={`w-full py-4 rounded-2xl font-bold text-white shadow-lg transition-all flex items-center justify-center gap-2 ${isApplying ? 'bg-slate-400 cursor-not-allowed' : 'bg-emerald-600 hover:bg-emerald-500 shadow-emerald-500/20'
                                     }`}
                             >
                                 {isApplying ? (

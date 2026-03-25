@@ -9,12 +9,12 @@ const ApplicationSchema = new mongoose.Schema(
         },
         jobSeekerId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "JobSeeker",
             required: true,
         },
         recruiterId: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
+            ref: "Recruiter",
             required: true,
         },
         status: {

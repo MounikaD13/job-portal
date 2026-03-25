@@ -75,7 +75,6 @@ export default function Navbar() {
       ? [
         { to: '/recruiter/create-jobs', label: 'Add Job' },
         { to: '/recruiter/my-jobs', label: 'Jobs Posted' },
-        { to: '/recruiter/applicants', label: 'Applicants' },
         // { to: '/jobs', label: 'Browse Jobs' },
       ]
       : []

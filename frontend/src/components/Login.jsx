@@ -26,12 +26,12 @@ export default function Login() {
       const res = await API.post("/login", { email, password })
       loginUser(res.data)
       switch (res.data.role) {
-        case "jobseeker": navigate("/jobseeker/profile"); 
-        break
-        case "recruiter": navigate("/recruiter/profile"); 
-        break
-        case "admin": navigate("/admin/dashboard"); 
-        break
+        case "jobseeker": navigate("/jobseeker/profile");
+          break
+        case "recruiter": navigate("/recruiter/profile");
+          break
+        case "admin": navigate("/admin/dashboard");
+          break
         default: navigate("/")
       }
     } catch (err) {
@@ -64,10 +64,9 @@ export default function Login() {
             Your career, elevated
           </p>
 
-          <h1 className="text-[2rem] font-bold leading-tight">
+          <h1 className="text-[1.2rem] font-bold leading-tight">
             Find your next <br />
             <span className="text-cyan-300">dream role</span>
-            <br />
             today.
           </h1>
         </div>
@@ -77,20 +76,20 @@ export default function Login() {
 
           {/* center content */}
           <div>
-            <p className="text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-green-300 mb-[1rem]">
+            <p className="text-[0.72rem] font-semibold tracking-[0.14em] uppercase text-cyan-300 mb-[1rem]">
               Your career, elevated
             </p>
 
             <h1
               style={{
-                fontSize: "clamp(2.2rem,3.5vw,3rem)",
+                fontSize: "clamp(1.3rem,3.5vw,2rem)",
                 fontWeight: 700,
                 lineHeight: 1.15,
                 marginBottom: "1.4rem",
               }}
             >
               Find your next <br />
-              <span className="text-green-300">dream role</span>
+              <span className="text-cyan-300">dream role</span>
               <br />
               today.
             </h1>
@@ -139,15 +138,15 @@ export default function Login() {
 
         <div className="w-[100%] sm:w-[95%] md:w-[75%] lg:w-[80%] bg-white rounded-[1.2rem] shadow-[0_1rem_2rem_rgba(0,0,0,0.08)] p-[3rem]">
 
-          <h2 className="text-[1.8rem] font-bold text-[#0f172a]">Sign In</h2>
+          <h2 className="text-[1.2rem] font-bold text-[#0f172a]">Login</h2>
           <p className="text-[1rem] text-gray-500 mt-[0.5rem] mb-[2rem]">
             Enter your credentials to continue
           </p>
 
           {message.text && (
             <div className={`mb-[1.5rem] p-[1rem] rounded-[0.6rem] text-[0.95rem] font-medium flex items-center gap-[0.5rem] ${message.type === 'success'
-                ? 'bg-green-50 text-green-600 border border-green-200'
-                : 'bg-red-50 text-red-600 border border-red-200'
+              ? 'bg-green-50 text-green-600 border border-green-200'
+              : 'bg-red-50 text-red-600 border border-red-200'
               }`}>
               {message.type === 'success'
                 ? <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><polyline points="20 6 9 17 4 12" /></svg>
@@ -199,7 +198,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-[1rem] rounded-[0.6rem] bg-[#0f172a] text-white font-semibold hover:bg-black transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-[0.5rem]"
+              className="w-full py-[1rem] rounded-[0.6rem] bg-cyan-500 text-white font-semibold hover:bg-cyan-700 transition disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-[0.5rem]"
             >
               {loading && (
                 <span className="inline-block w-[14px] h-[14px] border-2 border-white/30 border-t-white rounded-full animate-spin" />

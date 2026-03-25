@@ -69,9 +69,9 @@ export default function ViewApplicants() {
                         onClick={() => navigate('/recruiter/my-jobs')}
                         className="flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-emerald-600 transition-colors mb-6"
                     >
-                        <ArrowLeft size={16} /> Back to My Jobs
+                        <ArrowLeft size={20} />
                     </button>
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">Applicants</h1>
+                    <h1 className="text-lg font-bold text-slate-900 tracking-tight mb-2">Applicants</h1>
                     <p className="text-slate-500">Review and manage candidates who applied for this position.</p>
                 </div>
             </div>
@@ -95,11 +95,11 @@ export default function ViewApplicants() {
 
                                     {/* Candidate Info */}
                                     <div className="flex items-center gap-5 flex-1 min-w-0">
-                                        <div className="w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
-                                            <User size={28} />
+                                        <div className="w-10 h-10 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shrink-0">
+                                            <User size={20} />
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="text-lg font-extrabold text-slate-900 truncate">
+                                            <h3 className="text-lg font-bold text-slate-900 truncate">
                                                 {app.jobSeekerId?.name || 'Anonymous Candidate'}
                                             </h3>
                                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs font-semibold mt-1">
@@ -122,7 +122,7 @@ export default function ViewApplicants() {
                                                 href={`${import.meta.env.VITE_API_URL}/applications/resume/${app.resumeId}`}
                                                 target="_blank"
                                                 rel="noopener noreferrer"
-                                                className="inline-flex items-center gap-2 px-4 py-2.5 bg-slate-900 text-white text-xs font-bold rounded-xl hover:bg-slate-800 transition-all shadow-lg shadow-slate-200"
+                                                className="inline-flex items-center gap-2 px-4 py-2.5 bg-green-900/80 text-white text-xs font-bold rounded-xl hover:bg-cyan-800 transition-all shadow-lg shadow-slate-200"
                                             >
                                                 <FileText size={16} /> View Resume
                                             </a>
@@ -143,13 +143,13 @@ export default function ViewApplicants() {
                                                         onClick={() => handleStatusUpdate(app._id, opt.value)}
                                                         disabled={updatingStatusId === app._id}
                                                         className={`p-2 rounded-xl transition-all flex items-center gap-2 ${isSelected
-                                                                ? `${opt.color} shadow-sm px-3`
-                                                                : 'text-slate-400 hover:text-slate-600 hover:bg-white'
+                                                            ? `${opt.color} shadow-sm px-3`
+                                                            : 'text-slate-400 hover:text-slate-600 hover:bg-white'
                                                             }`}
                                                         title={opt.label}
                                                     >
                                                         <Icon size={16} />
-                                                        {isSelected && <span className="text-[10px] font-extrabold uppercase tracking-widest">{opt.label}</span>}
+                                                        {isSelected && <span className="text-[10px] font-bold uppercase tracking-widest">{opt.label}</span>}
                                                     </button>
                                                 );
                                             })}

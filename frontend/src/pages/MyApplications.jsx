@@ -43,7 +43,7 @@ export default function MyApplications() {
         <div className="min-h-screen bg-slate-50 pb-20">
             <div className="bg-white border-b border-slate-200 pt-12 pb-16">
                 <div className="max-w-5xl mx-auto px-6">
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight mb-2">My Applications</h1>
+                    <h1 className="text-xl font-bold text-slate-900 tracking-tight mb-2">My Applications</h1>
                     <p className="text-slate-500">Track the status of your job applications and career progress.</p>
                 </div>
             </div>
@@ -87,7 +87,7 @@ export default function MyApplications() {
                                             )}
                                         </div>
                                         <div className="min-w-0">
-                                            <h3 className="text-lg font-extrabold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                                            <h3 className="text-lg font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
                                                 {app.jobId?.title || 'Unknown Position'}
                                             </h3>
                                             <div className="flex flex-wrap items-center gap-y-1 gap-x-4 text-xs text-slate-500 font-medium mt-1">
@@ -105,7 +105,7 @@ export default function MyApplications() {
                                     </div>
 
                                     <div className="flex items-center justify-between sm:justify-end gap-6 sm:min-w-[200px]">
-                                        <span className={`px-4 py-1.5 text-[10px] font-extrabold uppercase tracking-widest rounded-full ${STATUS_STYLES[app.status] || 'bg-slate-100 text-slate-600'}`}>
+                                        <span className={`px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest rounded-full ${STATUS_STYLES[app.status] || 'bg-slate-100 text-slate-600'}`}>
                                             {app.status}
                                         </span>
                                         <div className="w-10 h-10 rounded-full border border-slate-100 flex items-center justify-center text-slate-300 group-hover:bg-emerald-600 group-hover:text-white group-hover:border-emerald-600 transition-all">
