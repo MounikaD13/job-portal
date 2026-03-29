@@ -49,6 +49,7 @@ mongoose.connect(process.env.MONGODB_URL)
         app.use("/api/recruiter", recruiterRoute)
         app.use("/api/jobs", JobRoute)
         app.use("/api/applications", applicationRoutes)
+        app.use("/api/notifications", require("./routes/notificationRoutes"))
         app.get("/", (req, res) => {
             res.json({ message: "Job Portal API is running" })
         })

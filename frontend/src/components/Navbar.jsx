@@ -36,6 +36,7 @@ export default function Navbar() {
 import React, { useContext, useState, useRef, useEffect } from 'react'
 import { AuthContext } from "../context/AuthContext"
 import { Link, useLocation, useNavigate } from 'react-router-dom'
+import API from '../api/apiCheck'
 
 export default function Navbar() {
   const { logoutUser, user, role } = useContext(AuthContext)
@@ -45,6 +46,9 @@ export default function Navbar() {
   const location = useLocation()
   const navigate = useNavigate()
   const dropdownRef = useRef(null)
+  const notifDropdownRef = useRef(null)
+  const [notifications, setNotifications] = useState([])
+  const [notifDropdownOpen, setNotifDropdownOpen] = useState(false)
 
   const isActive = (path) => location.pathname === path
 
@@ -53,16 +57,49 @@ export default function Navbar() {
       ? 'text-cyan-700 bg-indigo-100 '
       : 'text-slate-600 hover:text-cyan-700 hover:bg-slate-100'
     }`
+
+  useEffect(() => {
+    if (user && role === 'jobseeker') {
+      const fetchNotifications = async () => {
+        try {
+          const res = await API.get('/notifications')
+          setNotifications(res.data.notifications)
+        } catch (error) {
+          console.error("Error fetching notifications", error)
+        }
+      }
+      fetchNotifications()
+    }
+  }, [user, role])
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setDropdownOpen(false)
       }
+      if (notifDropdownRef.current && !notifDropdownRef.current.contains(e.target)) {
+        setNotifDropdownOpen(false)
+      }
     }
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
   }, [])
+
+  const handleNotificationClick = async (notif) => {
+    if (!notif.isRead) {
+        try {
+            await API.put(`/notifications/${notif._id}/read`);
+            setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, isRead: true } : n));
+        } catch (error) {
+            console.error("Error marking notification as read", error);
+        }
+    }
+    setNotifDropdownOpen(false);
+    navigate(`/jobs/${notif.jobId}`);
+  };
+
+  const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const profilePath = role === 'jobseeker' ? '/jobseeker/profile' : '/recruiter/profile'
 
@@ -147,6 +184,60 @@ export default function Navbar() {
                   }`}>
                   {role === 'recruiter' ? '🏢 Recruiter' : '👤 Job Seeker'}
                 </span>
+
+                {/* Notifications Dropdown for Job Seekers */}
+                {role === 'jobseeker' && (
+                  <div className="relative" ref={notifDropdownRef}>
+                    <button
+                      onClick={() => setNotifDropdownOpen(!notifDropdownOpen)}
+                      className="relative w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-600 hover:bg-indigo-50 hover:text-indigo-600 transition-all focus:outline-none"
+                    >
+                      <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                      </svg>
+                      {unreadCount > 0 && (
+                        <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white shadow-sm ring-2 ring-white">
+                          {unreadCount}
+                        </span>
+                      )}
+                    </button>
+
+                    {notifDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-72 max-h-80 overflow-y-auto bg-white rounded-xl shadow-lg border border-slate-100 py-2 z-50 animate-in">
+                        <div className="px-4 py-2 border-b border-slate-100 flex justify-between items-center">
+                          <h3 className="text-sm font-bold text-slate-800">Notifications</h3>
+                          {unreadCount > 0 && (
+                            <span className="bg-red-100 text-red-600 text-xs font-semibold px-2 py-0.5 rounded-full">
+                              {unreadCount} new
+                            </span>
+                          )}
+                        </div>
+                        <div className="max-h-60 overflow-y-auto">
+                          {notifications.length === 0 ? (
+                            <div className="px-4 py-8 text-center text-sm text-slate-500">
+                              No notifications yet
+                            </div>
+                          ) : (
+                            notifications.map(notif => (
+                              <button
+                                key={notif._id}
+                                onClick={() => handleNotificationClick(notif)}
+                                className={`w-full text-left px-4 py-3 border-b border-slate-50 hover:bg-slate-50 transition-colors ${!notif.isRead ? 'bg-indigo-50/50' : ''}`}
+                              >
+                                <p className={`text-sm ${!notif.isRead ? 'font-semibold text-slate-800' : 'text-slate-600'}`}>
+                                  {notif.message}
+                                </p>
+                                <p className="text-[10px] text-slate-400 mt-1">
+                                  {new Date(notif.createdAt).toLocaleDateString()}
+                                </p>
+                              </button>
+                            ))
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {/* Avatar with Dropdown */}
                 <div className="relative" ref={dropdownRef}>

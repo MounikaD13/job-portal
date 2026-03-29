@@ -2,6 +2,8 @@ const express = require("express")
 const router = express.Router()
 const mongoose = require("mongoose")
 const Job = require("../models/Jobs")
+const JobSeeker = require("../models/JobSeeker")
+const Notification = require("../models/Notification")
 const authMiddleware = require("../middleware/authMiddleware")
 const upload = require("../middleware/upload")
 const { getBucket, uploadToGridFS } = require("../utils/gridFsUpload")
@@ -68,6 +70,32 @@ router.post("/", authMiddleware(["recruiter"]), async (req, res) => {
             recruiterId: req.user.id
         })
         await newJob.save()
+        
+        // Trigger notifications for matched job seekers
+        if (skillsRequired && skillsRequired.length > 0) {
+            try {
+                // Determine matches based on case-insensitive regex if possible, but $in works for exact match
+                // We'll use a simple $in to match any of the skills given.
+                const caseInsensitiveSkills = skillsRequired.map(skill => new RegExp('^' + skill + '$', 'i'))
+                
+                const matchedSeekers = await JobSeeker.find({
+                    skills: { $in: caseInsensitiveSkills }
+                })
+                
+                if (matchedSeekers.length > 0) {
+                    const notifications = matchedSeekers.map(seeker => ({
+                        userId: seeker._id,
+                        jobId: newJob._id,
+                        message: `New job matching your skills: ${title} at ${companyName}`
+                    }))
+                    
+                    await Notification.insertMany(notifications)
+                }
+            } catch (notifErr) {
+                console.error("Failed to create notifications:", notifErr)
+            }
+        }
+        
         res.status(201).json({ message: "Job added successfully", job: newJob })
     } catch (err) {
         console.error("Failed to create job:", err)
