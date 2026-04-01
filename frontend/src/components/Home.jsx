@@ -117,7 +117,7 @@ export default function Home() {
               <h2 className="text-xl font-bold text-gray-900 mb-2">Explore by Category</h2>
               <p className="text-gray-600 max-w-2xl text-md">Find the specific role you are looking for in our specialized industry categories, tailored for diverse skill sets.</p>
             </div>
-            <Link to="/jobs" className="hidden sm:flex items-center text-blue-800 font-semibold hover:text-blue-600 transition-colors">
+            <Link className="hidden sm:flex items-center text-blue-800 font-semibold hover:text-blue-600 transition-colors">
               All Categories <ChevronRight className="h-5 w-5 ml-1" />
             </Link>
           </div>
@@ -137,7 +137,7 @@ export default function Home() {
           </div>
 
           <div className="mt-10 sm:hidden flex justify-center">
-            <Link to="/jobs" className="flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors bg-blue-50 px-6 py-3 rounded-xl w-full justify-center">
+            <Link className="flex items-center text-blue-600 font-semibold hover:text-blue-800 transition-colors bg-blue-50 px-6 py-3 rounded-xl w-full justify-center">
               All Categories <ChevronRight className="h-5 w-5 ml-1" />
             </Link>
           </div>
@@ -187,7 +187,7 @@ export default function Home() {
                 <Link to="/register" className="bg-white text-cyan-600 font-bold py-4 px-10 rounded-xl hover:bg-gray-50 transition-colors duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 text-md">
                   Get Started Now
                 </Link>
-                <Link to="/jobs" className="bg-transparent border border-white/30 text-white font-bold py-4 px-10 rounded-xl hover:bg-white/10 transition-colors duration-200 text-md">
+                <Link className="bg-transparent border border-white/30 text-white font-bold py-4 px-10 rounded-xl hover:bg-white/10 transition-colors duration-200 text-md">
                   Browse Jobs
                 </Link>
               </div>
