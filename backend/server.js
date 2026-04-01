@@ -14,8 +14,10 @@ const app = express()
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
-    // origin: "http://localhost:5173", // Vite frontend URL
-    origin:"https://job-portal-f-lmbk.onrender.com",
+    origin: [
+        "http://localhost:5173",
+        "https://job-portal-f-lmbk.onrender.com"
+    ],
     credentials: true
 }))
 app.use(cookieParser())
