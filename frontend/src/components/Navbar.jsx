@@ -88,15 +88,15 @@ export default function Navbar() {
 
   const handleNotificationClick = async (notif) => {
     if (!notif.isRead) {
-        try {
-            await API.put(`/notifications/${notif._id}/read`);
-            setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, isRead: true } : n));
-        } catch (error) {
-            console.error("Error marking notification as read", error);
-        }
+      try {
+        await API.put(`/notifications/${notif._id}/read`);
+        setNotifications(prev => prev.map(n => n._id === notif._id ? { ...n, isRead: true } : n));
+      } catch (error) {
+        console.error("Error marking notification as read", error);
+      }
     }
     setNotifDropdownOpen(false);
-    navigate(`/jobs/${notif.jobId}`);
+    navigate(`/job/${notif.jobId}`);
   };
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
