@@ -8,7 +8,7 @@ const authMiddleware = (roles = []) => {
     try {
       const authHeader = req.headers["authorization"]
       if (!authHeader) {
-        return res.status(401).json({ "meassage": "token not provided" })
+        return res.status(401).json({ "message": "token not provided" })
       }
       const token = authHeader.split(" ")[1]
       const decoded = jwt.verify(token, process.env.JWT_SECRET)
